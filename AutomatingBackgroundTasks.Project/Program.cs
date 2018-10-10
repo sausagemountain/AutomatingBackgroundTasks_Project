@@ -5,12 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutomatingBackgroundTasks_Project
+namespace AutomatingBackgroundTasks.Project
 {
     public class Program
     {
         [STAThread]
         public static void Main(string[] args)
+        {
+
+        }
+
+        [STAThread]
+        public static void Main2(string[] args)
         {
             var t = new DirectoryInfo(@"C:\Users\Михаил\Documents\Dropbox\Скриншоты");
             while (true)

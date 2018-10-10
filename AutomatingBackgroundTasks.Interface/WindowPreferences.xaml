@@ -1,0 +1,29 @@
+﻿<Window x:Class="AutomatingBackgroundTasks.Interface.WindowPreferences"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
+        xmlns:properties="clr-namespace:AutomatingBackgroundTasks.Interface.Properties"
+        mc:Ignorable="d"
+        Title="Preferences"
+        SizeToContent="WidthAndHeight"
+        Height="Auto" Width="Auto"
+        MinHeight="110" MinWidth="250">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <CheckBox Name="MinimizeToTray"
+                      Checked="SaveSettings" Unchecked="SaveSettings">
+                <CheckBox.IsChecked>
+                    <Binding Source="{x:Static properties:Settings.Default}" Path="MinimizeToTray" />
+                </CheckBox.IsChecked>
+                <TextBlock Text="Minimize to Tray"/>
+            </CheckBox>
+            <CheckBox Name="ShowTrayIcon" 
+                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AlwaysShowTrayIcon}" 
+                      Checked="SaveSettings" Unchecked="SaveSettings">
+                <TextBlock Text="Always Show Tray Icon"/>
+            </CheckBox>
+        </StackPanel>
+    </Grid>
+</Window>
