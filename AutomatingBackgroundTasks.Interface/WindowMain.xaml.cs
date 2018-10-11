@@ -18,8 +18,6 @@ namespace AutomatingBackgroundTasks.Interface
         public WindowMain()
         {
             InitializeComponent();
-            {
-            }
         }
         private void this_Loaded(object sender, RoutedEventArgs e)
         {

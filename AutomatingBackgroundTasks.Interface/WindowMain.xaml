@@ -9,6 +9,7 @@
         StateChanged="this_StateChanged"
         Closed="this_Closed"
         Loaded="this_Loaded"
+        WindowStartupLocation="CenterOwner"
         Title="My Background Tasks Automator"
         SizeToContent="WidthAndHeight"
         Height="Auto" Width="Auto"
