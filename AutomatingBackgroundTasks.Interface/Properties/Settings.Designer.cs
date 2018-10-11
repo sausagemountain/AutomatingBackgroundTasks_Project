@@ -37,25 +37,6 @@ namespace AutomatingBackgroundTasks.Interface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>png</string>
-  <string>jpg</string>
-  <string>jpeg</string>
-  <string>gif</string>
-  <string>tiff</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection Extensions {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["Extensions"]));
-            }
-            set {
-                this["Extensions"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты")]
         public string DestinationPath {
             get {
@@ -111,6 +92,25 @@ namespace AutomatingBackgroundTasks.Interface.Properties {
             }
             set {
                 this["AlwaysShowTrayIcon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>.png</string>
+  <string>.jpg</string>
+  <string>.jpeg</string>
+  <string>.gif</string>
+  <string>.tiff</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection Extensions {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["Extensions"]));
+            }
+            set {
+                this["Extensions"] = value;
             }
         }
     }

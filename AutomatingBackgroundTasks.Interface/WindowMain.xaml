@@ -78,7 +78,7 @@
 
             </Grid>
                 <ListView Name="ExtenisonList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Margin="4" 
-                          ItemsSource="{Binding Source={x:Static properties:Settings.Default}, Path=Extensions}">
+                          ItemsSource="{Binding Source={x:Static local:WindowMain.ExtensionCollection}}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn DisplayMemberBinding="{Binding}">

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
         xmlns:properties="clr-namespace:AutomatingBackgroundTasks.Interface.Properties"
         mc:Ignorable="d"
+        Closing="this_Closing"
         Title="Preferences"
         SizeToContent="WidthAndHeight"
         Height="Auto" Width="Auto"

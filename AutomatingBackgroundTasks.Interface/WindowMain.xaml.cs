@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
@@ -96,8 +98,7 @@ namespace AutomatingBackgroundTasks.Interface
         public Thread FileChecker;
         private MyTasks BackgroundProcesses;
         public bool shouldRun;
-        private WindowAddExtension addExtensionDialog;
-        private WindowPreferences preferences;
+        public static ObservableCollection<string> ExtensionCollection { get; set; } = new ObservableCollection<string>(Settings.Default.Extensions.Cast<string>());
 
         private void FileCheck_Checked(object sender, RoutedEventArgs e)
         {
@@ -112,15 +113,16 @@ namespace AutomatingBackgroundTasks.Interface
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             FileCheckBox.IsChecked = false;
-            if (addExtensionDialog == null)
-                addExtensionDialog = new WindowAddExtension {Owner = this};
+            var addExtensionDialog = new WindowAddExtension {Owner = this};
             addExtensionDialog.ShowDialog();
+            ExtensionCollection.Add(addExtensionDialog.NewExtenison);
             Settings.Default.Extensions.Add(addExtensionDialog.NewExtenison);
             Settings.Default.Save();
         }
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
             FileCheckBox.IsChecked = false;
+            ExtensionCollection.RemoveAt(ExtenisonList.SelectedIndex);
             Settings.Default.Extensions.RemoveAt(ExtenisonList.SelectedIndex);
             Settings.Default.Save();
         }
@@ -204,12 +206,8 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void Preferences_Click(object sender, RoutedEventArgs e)
         {
-            if (preferences == null)
-                preferences = new WindowPreferences
-                {
-                    Owner = this
-                };
-            preferences.Show();
+            var preferences = new WindowPreferences { Owner = this };
+            preferences.ShowDialog();
         }
     }
 }

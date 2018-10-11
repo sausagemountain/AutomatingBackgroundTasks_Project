@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace AutomatingBackgroundTasks.Interface
@@ -14,6 +15,7 @@ namespace AutomatingBackgroundTasks.Interface
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             NewExtenison = Extension.Text;
+            Extension.Text = "";
             Close();
         }
 
@@ -39,6 +41,17 @@ namespace AutomatingBackgroundTasks.Interface
                 newText = newText.Replace(s, "");
 
             Extension.Text = newText;
+        }
+
+        private void this_Closing(object sender, CancelEventArgs e)
+        {
+            Hide();
+            e.Cancel = true;
+        }
+
+        private void this_Loaded(object sender, RoutedEventArgs e)
+        {
+            Extension.Focus();
         }
     }
 }

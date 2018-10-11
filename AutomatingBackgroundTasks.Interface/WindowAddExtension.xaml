@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
         xmlns:properties="clr-namespace:AutomatingBackgroundTasks.Interface.Properties"
         mc:Ignorable="d"
+        Loaded="this_Loaded"
+        Closing="this_Closing"
         Title="Add Extention to Organise" 
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
