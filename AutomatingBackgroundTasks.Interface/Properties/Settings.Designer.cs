@@ -8,93 +8,115 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AutomatingBackgroundTasks.Interface.Properties {
-    
-    
+namespace AutomatingBackgroundTasks.Interface.Properties
+{
+
+
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.8.0.0")]
-    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-        
-        public static Settings Default {
-            get {
+
+        public static Settings Default
+        {
+            get
+            {
                 return defaultInstance;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты\\Source")]
-        public string SourcePath {
-            get {
+        public string SourcePath
+        {
+            get
+            {
                 return ((string)(this["SourcePath"]));
             }
-            set {
+            set
+            {
                 this["SourcePath"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты")]
-        public string DestinationPath {
-            get {
+        public string DestinationPath
+        {
+            get
+            {
                 return ((string)(this["DestinationPath"]));
             }
-            set {
+            set
+            {
                 this["DestinationPath"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool Recursive {
-            get {
+        public bool Recursive
+        {
+            get
+            {
                 return ((bool)(this["Recursive"]));
             }
-            set {
+            set
+            {
                 this["Recursive"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseDestination {
-            get {
+        public bool UseDestination
+        {
+            get
+            {
                 return ((bool)(this["UseDestination"]));
             }
-            set {
+            set
+            {
                 this["UseDestination"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MinimizeToTray {
-            get {
+        public bool MinimizeToTray
+        {
+            get
+            {
                 return ((bool)(this["MinimizeToTray"]));
             }
-            set {
+            set
+            {
                 this["MinimizeToTray"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool AlwaysShowTrayIcon {
-            get {
+        public bool AlwaysShowTrayIcon
+        {
+            get
+            {
                 return ((bool)(this["AlwaysShowTrayIcon"]));
             }
-            set {
+            set
+            {
                 this["AlwaysShowTrayIcon"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
@@ -105,11 +127,14 @@ namespace AutomatingBackgroundTasks.Interface.Properties {
   <string>.gif</string>
   <string>.tiff</string>
 </ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection Extensions {
-            get {
+        public global::System.Collections.Specialized.StringCollection Extensions
+        {
+            get
+            {
                 return ((global::System.Collections.Specialized.StringCollection)(this["Extensions"]));
             }
-            set {
+            set
+            {
                 this["Extensions"] = value;
             }
         }
