@@ -33,12 +33,12 @@ namespace AutomatingBackgroundTasks.Interface
             return IsDestChildOfSource(source.FullName, destination.FullName);
         }
 
-        public void CheckFiles(ref bool isActive)
+        public void CheckFiles(ref bool isActive, int n)
         {
-            var source = new DirectoryInfo(Properties.Settings.Default.SourcePath);
+            var source = new DirectoryInfo(Properties.Settings.Default.SourcePaths[n]);
             DirectoryInfo dest = source;
-            if (Properties.Settings.Default.UseDestination)
-                dest = new DirectoryInfo(Properties.Settings.Default.DestinationPath);
+            if (bool.Parse(Properties.Settings.Default.UseDestinations[n]))
+                dest = new DirectoryInfo(Properties.Settings.Default.DestinationPaths[n]);
 
             while (isActive)
             {
@@ -57,15 +57,15 @@ namespace AutomatingBackgroundTasks.Interface
                 if (allFiles.Length == 0)
                     continue;
                 allFiles = allFiles.Where(e => Properties.Settings.Default.Extensions.Contains(e.Extension.ToLower())).ToArray();
-                foreach (FileInfo capture in allFiles)
+                foreach (FileInfo file in allFiles)
                 {
-                    var newName = $"{ (Properties.Settings.Default.UseDestination ? dest.FullName : source.FullName) + $"\\{capture.LastWriteTime.GetDateTimeFormats()[46].Replace('-', '\\').Replace(':', '-').Replace('T', ' ')}.{capture.Extension.ToLower()}"}";
+                    var newName = $"{ (bool.Parse(Properties.Settings.Default.UseDestinations[n]) ? dest.FullName : source.FullName) + $"\\{file.LastWriteTime.GetDateTimeFormats()[46].Replace('-', '\\').Replace(':', '-').Replace('T', ' ')}.{file.Extension.ToLower()}"}";
                     Directory.CreateDirectory(newName.Remove(newName.LastIndexOf('\\')));
                     bool done = false;
                     while(!done)
                         try
                         {
-                            capture.MoveTo(newName);
+                            file.MoveTo(newName);
                             done = true;
                         }
                         catch

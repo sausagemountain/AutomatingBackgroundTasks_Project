@@ -25,25 +25,30 @@ namespace AutomatingBackgroundTasks.Interface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты\\Source")]
-        public string SourcePath {
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+            "tring>C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты\\Source</string>\r\n</ArrayOfStri" +
+            "ng>")]
+        public global::System.Collections.Specialized.StringCollection SourcePaths {
             get {
-                return ((string)(this["SourcePath"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["SourcePaths"]));
             }
             set {
-                this["SourcePath"] = value;
+                this["SourcePaths"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты")]
-        public string DestinationPath {
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+            "tring>C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты</string>\r\n</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection DestinationPaths {
             get {
-                return ((string)(this["DestinationPath"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["DestinationPaths"]));
             }
             set {
-                this["DestinationPath"] = value;
+                this["DestinationPaths"] = value;
             }
         }
         
@@ -61,13 +66,15 @@ namespace AutomatingBackgroundTasks.Interface.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseDestination {
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+            "tring>True</string>\r\n</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection UseDestinations {
             get {
-                return ((bool)(this["UseDestination"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["UseDestinations"]));
             }
             set {
-                this["UseDestination"] = value;
+                this["UseDestinations"] = value;
             }
         }
         

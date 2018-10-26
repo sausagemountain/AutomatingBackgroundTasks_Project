@@ -34,51 +34,76 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="2.5*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Vertical">
                     <CheckBox Name="FileCheckBox" Checked="FileCheck_Checked" Unchecked="FileCheck_Checked" FontSize="28">
                         <TextBlock Margin="8" Text="File Sorting"/>
                     </CheckBox>
-                    <CheckBox Name="RecursiveCheckBox" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=Recursive}" 
-                              Checked="SaveSettings" Unchecked="SaveSettings"  
-                              Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestination, Converter={StaticResource B2V}}">
-                        <TextBlock Text="Recursively"/>
-                    </CheckBox>
-                    <CheckBox Name="UseDestination" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestination}" 
-                              Checked="SaveSettings" Unchecked="SaveSettings">
-                        <TextBlock Text="Sort to Another Directory"/>
-                    </CheckBox>
                     <!--<CheckBox Name="DoCopy" Checked="SaveSettings" Unchecked="SaveSettings">
                         <TextBlock Text="Keep Originals"/>
                     </CheckBox>-->
                 </StackPanel>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="50"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Take Pics From:" Grid.Row="0" Grid.Column="0"/>
-                    <TextBox Name="SourcePath" Margin="5 0 5 0" IsReadOnly="True" TextWrapping="NoWrap" Grid.Row="0" Grid.Column="1" 
-                             Text="{Binding Source={x:Static properties:Settings.Default}, Path=SourcePath}"/>
-                    <Button Name="EditSourcePath" Content="Edit..." Margin="5 0 0 0" Click="EditSourcePath_Click" Grid.Row="0" Grid.Column="2"/>
-
-                    <TextBlock Text="Put Them In:" Grid.Row="1" Grid.Column="0" 
-                               Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestination, Converter={StaticResource B2V}}"/>
-                    <TextBox Name="DestinationPath" Margin="5 0 5 0" IsReadOnly="True" TextWrapping="NoWrap" Grid.Row="1" Grid.Column="1" 
-                             Text="{Binding Source={x:Static properties:Settings.Default}, Path=DestinationPath}"  
-                             Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestination, Converter={StaticResource B2V}}"/>
-                    <Button Name="EditDestinationPath" Content="Edit..." Margin="5 0 0 0" Click="EditDestinationPath_Click" Grid.Row="1" Grid.Column="2" 
-                            Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestination, Converter={StaticResource B2V}}"/>
+                <Grid Grid.Row="2">
+                    <ListView>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Source" DisplayMemberBinding="{Binding Item1}"/>
+                                <GridViewColumn Header="Destination" DisplayMemberBinding="{Binding Item2}"/>
+                                <GridViewColumn Header="Use Destination" DisplayMemberBinding="{Binding Item3}"/>
+                                <GridViewColumn Header="Recursively" DisplayMemberBinding="{Binding Item4}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </Grid>
+                <Grid Grid.Row="1">
+                    <Grid Visibility="Visible">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="50" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
-            </Grid>
-                <ListView Name="ExtenisonList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Margin="4" 
+                        <TextBlock Text="Take Pics From:" Grid.Row="0" Grid.Column="0" />
+                        <TextBox Name="SourcePath" Margin="5 0 5 0" IsReadOnly="True" TextWrapping="NoWrap"
+                                 Grid.Row="0" Grid.Column="1"
+                                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=SourcePaths[0]}" />
+                        <Button Name="EditSourcePath" Content="Edit..." Margin="5 0 0 0" Click="EditSourcePath_Click"
+                                Grid.Row="0" Grid.Column="2" />
+
+                        <TextBlock Text="Put Them In:" Grid.Row="1" Grid.Column="0"
+                                   Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}" />
+                        <TextBox Name="DestinationPath" Margin="5 0 5 0" IsReadOnly="True" TextWrapping="NoWrap"
+                                 Grid.Row="1" Grid.Column="1"
+                                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=DestinationPaths[0]}"
+                                 Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}" />
+                        <Button Name="EditDestinationPath" Content="Edit..." Margin="5 0 0 0"
+                                Click="EditDestinationPath_Click" Grid.Row="1" Grid.Column="2"
+                                Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}" />
+
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2">
+                            <CheckBox Name="RecursiveCheckBox"
+                                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=Recursive}"
+                                      Checked="SaveSettings" Unchecked="SaveSettings"
+                                      Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}">
+                                <TextBlock Text="Recursively" />
+                            </CheckBox>
+
+                            <CheckBox Name="UseDestination"
+                                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0]}"
+                                      Checked="SaveSettings" Unchecked="SaveSettings">
+                                <TextBlock Text="Sort to Another Directory" />
+                            </CheckBox>
+                        </StackPanel>
+                    </Grid>
+
+            </Grid></Grid>
+                <ListView Name="ExtensionList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Margin="4" 
                           ItemsSource="{Binding Source={x:Static local:WindowMain.ExtensionCollection}}">
                     <ListView.View>
                         <GridView>

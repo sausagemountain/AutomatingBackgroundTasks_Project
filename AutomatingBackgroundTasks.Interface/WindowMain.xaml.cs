@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -66,6 +67,27 @@ namespace AutomatingBackgroundTasks.Interface
                                    };
 
             BackgroundProcesses = new MyTasks();
+
+            for (int i = 0; i < Settings.Default.DestinationPaths.Count; i++)
+            {
+                SortingSettings.Add((Settings.Default.SourcePaths[i], Settings.Default.DestinationPaths[i], Settings.Default.UseDestinations[i], Settings.Default.));
+            }
+            SortingSettings.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs args)
+            {
+                switch (args.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        break;
+                    case NotifyCollectionChangedAction.Replace:
+                        break;
+                    case NotifyCollectionChangedAction.Move:
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        break;
+                }
+            };
         }
         private void this_StateChanged(object sender, EventArgs e)
         {
@@ -97,13 +119,14 @@ namespace AutomatingBackgroundTasks.Interface
         private MyTasks BackgroundProcesses;
         public bool shouldRun;
         public static ObservableCollection<string> ExtensionCollection { get; set; } = new ObservableCollection<string>(Settings.Default.Extensions.Cast<string>());
+        public static ObservableCollection<(string, string, bool, bool)> SortingSettings { get; set; } = new ObservableCollection<(string, string, bool, bool)>();
 
         private void FileCheck_Checked(object sender, RoutedEventArgs e)
         {
             shouldRun = FileCheckBox.IsChecked.GetValueOrDefault();
             if (shouldRun)
             {
-                FileChecker = new Thread(() => BackgroundProcesses.CheckFiles(ref shouldRun)) {IsBackground = true};
+                FileChecker = new Thread(() => BackgroundProcesses.CheckFiles(ref shouldRun, 0)) {IsBackground = true};
                 FileChecker.Start();
             }
         }
@@ -120,8 +143,8 @@ namespace AutomatingBackgroundTasks.Interface
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
             FileCheckBox.IsChecked = false;
-            ExtensionCollection.RemoveAt(ExtenisonList.SelectedIndex);
-            Settings.Default.Extensions.RemoveAt(ExtenisonList.SelectedIndex);
+            ExtensionCollection.RemoveAt(ExtensionList.SelectedIndex);
+            Settings.Default.Extensions.RemoveAt(ExtensionList.SelectedIndex);
             Settings.Default.Save();
         }
 
@@ -131,7 +154,7 @@ namespace AutomatingBackgroundTasks.Interface
             var dialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = true,
-                InitialDirectory = Settings.Default.SourcePath,
+                InitialDirectory = Settings.Default.SourcePaths[0],
                 Title = "Select Source Folder"
             };
 
@@ -142,13 +165,13 @@ namespace AutomatingBackgroundTasks.Interface
                     break;
                 case CommonFileDialogResult.Ok:
                     if (Settings.Default.Recursive)
-                        if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePath, Settings.Default.DestinationPath))
+                        if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePaths[0], Settings.Default.DestinationPaths[0]))
                         {
                             MessageBox.Show("Destination cannot be a child of Source while sorting recursively");
                             break;
                         }
 
-                    Settings.Default.SourcePath = dialog.FileName;
+                    Settings.Default.SourcePaths[0] = dialog.FileName;
                     Settings.Default.Save();
                     break;
                 case CommonFileDialogResult.Cancel:
@@ -163,7 +186,7 @@ namespace AutomatingBackgroundTasks.Interface
             var dialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = true,
-                InitialDirectory = Settings.Default.DestinationPath,
+                InitialDirectory = Settings.Default.DestinationPaths[0],
                 Title = "Select Destination Folder"
             };
 
@@ -174,13 +197,13 @@ namespace AutomatingBackgroundTasks.Interface
                     break;
                 case CommonFileDialogResult.Ok:
                     if (Settings.Default.Recursive)
-                        if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePath, Settings.Default.DestinationPath))
+                        if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePaths[0], Settings.Default.DestinationPaths[0]))
                         {
                             MessageBox.Show("Destination cannot be a child of Source while sorting recursively");
                             break;
                         }
 
-                    Settings.Default.DestinationPath = dialog.FileName;
+                    Settings.Default.DestinationPaths[0] = dialog.FileName;
                     Settings.Default.Save();
                     break;
                 case CommonFileDialogResult.Cancel:
@@ -193,7 +216,7 @@ namespace AutomatingBackgroundTasks.Interface
         {
             FileCheckBox.IsChecked = false;
             if (Settings.Default.Recursive)
-                if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePath, Settings.Default.DestinationPath))
+                if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePaths[0], Settings.Default.DestinationPaths[0]))
                 {
                     MessageBox.Show("Destination cannot be a child of Source while sorting recursively");
                     RecursiveCheckBox.IsChecked = false;
