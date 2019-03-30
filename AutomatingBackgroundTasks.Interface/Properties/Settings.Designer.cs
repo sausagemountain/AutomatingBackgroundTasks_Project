@@ -12,7 +12,7 @@ namespace AutomatingBackgroundTasks.Interface.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.8.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.9.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -20,104 +20,6 @@ namespace AutomatingBackgroundTasks.Interface.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
-            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
-            "tring>C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты\\Source</string>\r\n</ArrayOfStri" +
-            "ng>")]
-        public global::System.Collections.Specialized.StringCollection SourcePaths {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["SourcePaths"]));
-            }
-            set {
-                this["SourcePaths"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
-            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
-            "tring>C:\\Users\\Михаил\\Documents\\Dropbox\\Скриншоты</string>\r\n</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection DestinationPaths {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["DestinationPaths"]));
-            }
-            set {
-                this["DestinationPaths"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool Recursive {
-            get {
-                return ((bool)(this["Recursive"]));
-            }
-            set {
-                this["Recursive"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
-            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
-            "tring>True</string>\r\n</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection UseDestinations {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["UseDestinations"]));
-            }
-            set {
-                this["UseDestinations"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MinimizeToTray {
-            get {
-                return ((bool)(this["MinimizeToTray"]));
-            }
-            set {
-                this["MinimizeToTray"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool AlwaysShowTrayIcon {
-            get {
-                return ((bool)(this["AlwaysShowTrayIcon"]));
-            }
-            set {
-                this["AlwaysShowTrayIcon"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>.png</string>
-  <string>.jpg</string>
-  <string>.jpeg</string>
-  <string>.gif</string>
-  <string>.tiff</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection Extensions {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["Extensions"]));
-            }
-            set {
-                this["Extensions"] = value;
             }
         }
     }

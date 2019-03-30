@@ -14,8 +14,7 @@
         SizeToContent="WidthAndHeight"
         Height="Auto" Width="Auto"
         MinHeight="300" MinWidth="400"
-        Icon="Dakirby309-Windows-8-Metro-Drives-CD-Metro.ico"
-        >
+        Icon="Dakirby309-Windows-8-Metro-Drives-CD-Metro.ico" d:DataContext="{d:DesignData WindowMain}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -32,99 +31,68 @@
             </Grid.ColumnDefinitions>
             <Grid Margin="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="2.5*"/>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Vertical">
-                    <CheckBox Name="FileCheckBox" Checked="FileCheck_Checked" Unchecked="FileCheck_Checked" FontSize="28">
-                        <TextBlock Margin="8" Text="File Sorting"/>
-                    </CheckBox>
-                    <!--<CheckBox Name="DoCopy" Checked="SaveSettings" Unchecked="SaveSettings">
-                        <TextBlock Text="Keep Originals"/>
-                    </CheckBox>-->
-                </StackPanel>
-                <Grid Grid.Row="2">
-                    <ListView>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Source" DisplayMemberBinding="{Binding Item1}"/>
-                                <GridViewColumn Header="Destination" DisplayMemberBinding="{Binding Item2}"/>
-                                <GridViewColumn Header="Use Destination" DisplayMemberBinding="{Binding Item3}"/>
-                                <GridViewColumn Header="Recursively" DisplayMemberBinding="{Binding Item4}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid Visibility="Visible">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="50" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
 
-                        <TextBlock Text="Take Pics From:" Grid.Row="0" Grid.Column="0" />
-                        <TextBox Name="SourcePath" Margin="5 0 5 0" IsReadOnly="True" TextWrapping="NoWrap"
-                                 Grid.Row="0" Grid.Column="1"
-                                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=SourcePaths[0]}" />
-                        <Button Name="EditSourcePath" Content="Edit..." Margin="5 0 0 0" Click="EditSourcePath_Click"
-                                Grid.Row="0" Grid.Column="2" />
-
-                        <TextBlock Text="Put Them In:" Grid.Row="1" Grid.Column="0"
-                                   Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}" />
-                        <TextBox Name="DestinationPath" Margin="5 0 5 0" IsReadOnly="True" TextWrapping="NoWrap"
-                                 Grid.Row="1" Grid.Column="1"
-                                 Text="{Binding Source={x:Static properties:Settings.Default}, Path=DestinationPaths[0]}"
-                                 Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}" />
-                        <Button Name="EditDestinationPath" Content="Edit..." Margin="5 0 0 0"
-                                Click="EditDestinationPath_Click" Grid.Row="1" Grid.Column="2"
-                                Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}" />
-
-                        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2">
-                            <CheckBox Name="RecursiveCheckBox"
-                                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=Recursive}"
-                                      Checked="SaveSettings" Unchecked="SaveSettings"
-                                      Visibility="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0], Converter={StaticResource B2V}}">
-                                <TextBlock Text="Recursively" />
-                            </CheckBox>
-
-                            <CheckBox Name="UseDestination"
-                                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseDestinations[0]}"
-                                      Checked="SaveSettings" Unchecked="SaveSettings">
-                                <TextBlock Text="Sort to Another Directory" />
-                            </CheckBox>
-                        </StackPanel>
-                    </Grid>
-
-            </Grid></Grid>
-                <ListView Name="ExtensionList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Margin="4" 
-                          ItemsSource="{Binding Source={x:Static local:WindowMain.ExtensionCollection}}">
+                <ListView Name="ItemsGrid" ItemsSource="{Binding Source={x:Static local:WindowMain.Tasks}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" SelectionMode="Single">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Name="AddPathItem" Header="Add Path"/>
+                            <MenuItem Name="RemovePathItem" Header="Remove Path"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn DisplayMemberBinding="{Binding}">
-                                <GridViewColumnHeader>File Type
-                                    <GridViewColumnHeader.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Add" Click="Add_Click"/>
-                                        </ContextMenu>
-                                    </GridViewColumnHeader.ContextMenu>
-                                </GridViewColumnHeader>
+                            <GridViewColumn Header="">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding IsMoving}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Source">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <local:PathSelector DialogName="Select source directory" Path="{Binding SourcePath}" Margin="0" Padding="0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Destination">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding UseDestination}" Margin="0" Padding="0">
+                                            <local:PathSelector DialogName="Select destination directory" Margin="0" Padding="0" IsEnabled="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type CheckBox}}}" Path="{Binding DestinationPath}"/>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Recursive">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding Recursive}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                         </GridView>
                     </ListView.View>
-                    <ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Add" Click="Add_Click"/>
-                            <MenuItem Header="Remove" Click="Remove_Click"/>
-                        </ContextMenu>
-                    </ListView.ContextMenu>
                 </ListView>
+            </Grid>
+            <ListView Name="ExtensionList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Margin="4" ItemsSource="{Binding Source={x:Static local:WindowMain.ExtensionCollection}}" SelectionMode="Single">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding}">
+                            <GridViewColumnHeader Content="File Type"/>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Name="AddExtItem" Header="Add"/>
+                        <MenuItem Name="EditExtItem" Header="Edit"/>
+                        <MenuItem Name="RemoveExtItem" Header="Remove"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+            </ListView>
         </Grid>
     </Grid>
 </Window>

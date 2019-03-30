@@ -10,8 +10,12 @@ namespace AutomatingBackgroundTasks.Interface
         {
             InitializeComponent();
         }
+        public WindowAddExtension(string ext): this()
+        {
+            Extension.Text = ext;
+        }
 
-        public string NewExtenison { get; protected set; } = string.Empty;
+        public string NewExtenison { get; set; } = string.Empty;
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             NewExtenison = Extension.Text;
@@ -52,6 +56,13 @@ namespace AutomatingBackgroundTasks.Interface
         private void this_Loaded(object sender, RoutedEventArgs e)
         {
             Extension.Focus();
+        }
+
+        private void Extension_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) {
+                Add_Click(null, null);
+            }
         }
     }
 }

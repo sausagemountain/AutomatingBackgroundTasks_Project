@@ -84,6 +84,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -93,12 +94,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MyTasks.cs" />
+    <Compile Include="Ext.cs" />
+    <Compile Include="MySettings.cs" />
+    <Compile Include="MyTask.cs" />
+    <Compile Include="PathSelector.xaml.cs">
+      <DependentUpon>PathSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="RelayCommand.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="WindowPreferences.xaml.cs">
       <DependentUpon>WindowPreferences.xaml</DependentUpon>
@@ -106,6 +113,10 @@
     <Compile Include="WindowAddExtension.xaml.cs">
       <DependentUpon>WindowAddExtension.xaml</DependentUpon>
     </Compile>
+    <Page Include="PathSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WindowMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

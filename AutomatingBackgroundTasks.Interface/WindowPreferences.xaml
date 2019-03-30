@@ -14,15 +14,15 @@
         MinHeight="110" MinWidth="250">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <CheckBox Name="MinimizeToTray"
+            <CheckBox Name="MinimizeToTrayCheck"
                       Checked="SaveSettings" Unchecked="SaveSettings">
                 <CheckBox.IsChecked>
-                    <Binding Source="{x:Static properties:Settings.Default}" Path="MinimizeToTray" />
+                    <Binding Source="{x:Static local:MySettings.Default}" Path="MinimizeToTray" />
                 </CheckBox.IsChecked>
                 <TextBlock Text="Minimize to Tray"/>
             </CheckBox>
-            <CheckBox Name="ShowTrayIcon" 
-                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AlwaysShowTrayIcon}" 
+            <CheckBox Name="ShowTrayIconCheck" 
+                      IsChecked="{Binding Source={x:Static local:MySettings.Default}, Path=AlwaysShowTrayIcon}" 
                       Checked="SaveSettings" Unchecked="SaveSettings">
                 <TextBlock Text="Always Show Tray Icon"/>
             </CheckBox>

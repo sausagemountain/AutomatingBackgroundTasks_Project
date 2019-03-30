@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
@@ -19,72 +20,69 @@ namespace AutomatingBackgroundTasks.Interface
         public WindowMain()
         {
             InitializeComponent();
+            AddPathItem.Command = new RelayCommand(true, o => {
+                Tasks.Add(new MyTask());
+            });
+            AddExtItem.Command = new RelayCommand(true, o => {
+                var addExtensionDialog = new WindowAddExtension { Owner = this };
+                addExtensionDialog.ShowDialog();
+                ExtensionCollection.Add(addExtensionDialog.NewExtenison);
+            });
+            EditExtItem.Command = new RelayCommand(o => ExtensionList.SelectedIndex != -1, o => {
+                var addExtensionDialog = new WindowAddExtension(ExtensionCollection[ExtensionList.SelectedIndex].Clone() as string) { Owner = this };
+                addExtensionDialog.ShowDialog();
+                ExtensionCollection.RemoveAt(ExtensionList.SelectedIndex);
+                ExtensionCollection.Add(addExtensionDialog.NewExtenison);
+            });
+            RemovePathItem.Command = new RelayCommand(o => ItemsGrid.SelectedIndex != -1, o => {
+                Tasks[ItemsGrid.SelectedIndex].IsMoving = false;
+                Tasks.RemoveAt(ItemsGrid.SelectedIndex);
+            });
+            RemoveExtItem.Command = new RelayCommand(o => ExtensionList.SelectedIndex != -1, o => {
+                ExtensionCollection.RemoveAt(ExtensionList.SelectedIndex);
+            });
         }
         private void this_Loaded(object sender, RoutedEventArgs e)
         {
-            var Popup = new[]
+            var popup = new[]
             {
                 new MenuItem {Text = "Open"},
                 new MenuItem {Text = "Hide"},
                 new MenuItem {Text = "Exit"}
             };
-            Popup[0].Click += delegate
-                              {
-                                  Show();
-                                  WindowState = WindowState.Normal;
-                                  Activate();
-                              };
-            Popup[1].Click += delegate { WindowState = WindowState.Minimized; };
-            Popup[2].Click += delegate { Close(); };
+            popup[0].Click += delegate
+            {
+                Show();
+                WindowState = WindowState.Normal;
+                Activate();
+            };
+            popup[1].Click += delegate { WindowState = WindowState.Minimized; };
+            popup[2].Click += delegate { Close(); };
 
             using (var stream = new MemoryStream())
             {
                 var encoder = new BmpBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(Icon as BitmapSource));
                 encoder.Save(stream);
-                using (var bitmap = new Bitmap(stream))
-                {
+                using (var bitmap = new Bitmap(stream)) {
                     appIcon = new NotifyIcon
                     {
-                        ContextMenu = new ContextMenu(Popup),
+                        ContextMenu = new ContextMenu(popup),
                         Icon = System.Drawing.Icon.FromHandle(bitmap.GetHicon()),
-                        Visible = Settings.Default.AlwaysShowTrayIcon
+                        Visible = MySettings.Default.AlwaysShowTrayIcon
                     };
                 }
             }
 
-            appIcon.DoubleClick += delegate
-                                   {
-                                       switch (WindowState)
-                                       {
-                                           default:
-                                               Popup[1].PerformClick();
-                                               break;
-                                           case WindowState.Minimized:
-                                               Popup[0].PerformClick();
-                                               break;
-                                       }
-                                   };
-
-            BackgroundProcesses = new MyTasks();
-
-            for (int i = 0; i < Settings.Default.DestinationPaths.Count; i++)
+            appIcon.Click += (o, args) =>
             {
-                SortingSettings.Add((Settings.Default.SourcePaths[i], Settings.Default.DestinationPaths[i], Settings.Default.UseDestinations[i], Settings.Default.));
-            }
-            SortingSettings.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs args)
-            {
-                switch (args.Action)
+                switch (WindowState)
                 {
-                    case NotifyCollectionChangedAction.Add:
+                    default:
+                        popup[1].PerformClick();
                         break;
-                    case NotifyCollectionChangedAction.Remove:
-                        break;
-                    case NotifyCollectionChangedAction.Replace:
-                        break;
-                    case NotifyCollectionChangedAction.Move:
-                        break;
-                    case NotifyCollectionChangedAction.Reset:
+                    case WindowState.Minimized:
+                        popup[0].PerformClick();
                         break;
                 }
             };
@@ -94,7 +92,7 @@ namespace AutomatingBackgroundTasks.Interface
             switch (WindowState)
             {
                 case WindowState.Minimized:
-                    if (Settings.Default.MinimizeToTray)
+                    if (MySettings.Default.MinimizeToTray)
                     {
                         appIcon.Visible = true;
                         Hide();
@@ -102,127 +100,48 @@ namespace AutomatingBackgroundTasks.Interface
 
                     break;
                 default:
-                    if (Settings.Default.MinimizeToTray)
-                        if (!Settings.Default.AlwaysShowTrayIcon)
+                    if (MySettings.Default.MinimizeToTray)
+                        if (!MySettings.Default.AlwaysShowTrayIcon)
                             appIcon.Visible = false;
                     break;
             }
         }
         private void this_Closed(object sender, EventArgs e)
         {
-            shouldRun = false;
-            appIcon.Dispose();
+            MySettings.Default.Settings = Tasks.ToArray();
+            foreach (MyTask task in Tasks)
+            {
+                task.IsMoving = false;
+            }
+            MySettings.Default.Save();
+
+            if(appIcon != null)
+                appIcon.Dispose();
         }
 
         public NotifyIcon appIcon;
         public Thread FileChecker;
-        private MyTasks BackgroundProcesses;
-        public bool shouldRun;
-        public static ObservableCollection<string> ExtensionCollection { get; set; } = new ObservableCollection<string>(Settings.Default.Extensions.Cast<string>());
-        public static ObservableCollection<(string, string, bool, bool)> SortingSettings { get; set; } = new ObservableCollection<(string, string, bool, bool)>();
+        public static ObservableCollection<MyTask> Tasks { get; set; } = new ObservableCollection<MyTask>(MySettings.Default.Settings);
+        public static ObservableCollection<string> ExtensionCollection { get; set; } = new ObservableCollection<string>(MySettings.Default.Extensions);
+        
 
-        private void FileCheck_Checked(object sender, RoutedEventArgs e)
+        protected void WndProc(ref Message m)
         {
-            shouldRun = FileCheckBox.IsChecked.GetValueOrDefault();
-            if (shouldRun)
+            if (m.Msg == NativeMethods.WM_SHOWME)
             {
-                FileChecker = new Thread(() => BackgroundProcesses.CheckFiles(ref shouldRun, 0)) {IsBackground = true};
-                FileChecker.Start();
+                ShowMe();
             }
+            //base.WndProc(ref m);
         }
-
-        private void Add_Click(object sender, RoutedEventArgs e)
+        private void ShowMe()
         {
-            FileCheckBox.IsChecked = false;
-            var addExtensionDialog = new WindowAddExtension {Owner = this};
-            addExtensionDialog.ShowDialog();
-            ExtensionCollection.Add(addExtensionDialog.NewExtenison);
-            Settings.Default.Extensions.Add(addExtensionDialog.NewExtenison);
-            Settings.Default.Save();
-        }
-        private void Remove_Click(object sender, RoutedEventArgs e)
-        {
-            FileCheckBox.IsChecked = false;
-            ExtensionCollection.RemoveAt(ExtensionList.SelectedIndex);
-            Settings.Default.Extensions.RemoveAt(ExtensionList.SelectedIndex);
-            Settings.Default.Save();
-        }
-
-        private void EditSourcePath_Click(object sender, RoutedEventArgs e)
-        {
-            FileCheckBox.IsChecked = false;
-            var dialog = new CommonOpenFileDialog
+            if (WindowState == WindowState.Minimized)
             {
-                IsFolderPicker = true,
-                InitialDirectory = Settings.Default.SourcePaths[0],
-                Title = "Select Source Folder"
-            };
-
-            var result = dialog.ShowDialog();
-            switch (result)
-            {
-                case CommonFileDialogResult.None:
-                    break;
-                case CommonFileDialogResult.Ok:
-                    if (Settings.Default.Recursive)
-                        if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePaths[0], Settings.Default.DestinationPaths[0]))
-                        {
-                            MessageBox.Show("Destination cannot be a child of Source while sorting recursively");
-                            break;
-                        }
-
-                    Settings.Default.SourcePaths[0] = dialog.FileName;
-                    Settings.Default.Save();
-                    break;
-                case CommonFileDialogResult.Cancel:
-                    break;
+                WindowState = WindowState.Normal;
             }
-
-            dialog.Dispose();
-        }
-        private void EditDestinationPath_Click(object sender, RoutedEventArgs e)
-        {
-            FileCheckBox.IsChecked = false;
-            var dialog = new CommonOpenFileDialog
-            {
-                IsFolderPicker = true,
-                InitialDirectory = Settings.Default.DestinationPaths[0],
-                Title = "Select Destination Folder"
-            };
-
-            var result = dialog.ShowDialog();
-            switch (result)
-            {
-                case CommonFileDialogResult.None:
-                    break;
-                case CommonFileDialogResult.Ok:
-                    if (Settings.Default.Recursive)
-                        if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePaths[0], Settings.Default.DestinationPaths[0]))
-                        {
-                            MessageBox.Show("Destination cannot be a child of Source while sorting recursively");
-                            break;
-                        }
-
-                    Settings.Default.DestinationPaths[0] = dialog.FileName;
-                    Settings.Default.Save();
-                    break;
-                case CommonFileDialogResult.Cancel:
-                    break;
-            }
-
-            dialog.Dispose();
-        }
-        private void SaveSettings(object sender, RoutedEventArgs e)
-        {
-            FileCheckBox.IsChecked = false;
-            if (Settings.Default.Recursive)
-                if (MyTasks.IsDestChildOfSource(Settings.Default.SourcePaths[0], Settings.Default.DestinationPaths[0]))
-                {
-                    MessageBox.Show("Destination cannot be a child of Source while sorting recursively");
-                    RecursiveCheckBox.IsChecked = false;
-                }
-
-            Settings.Default.Save();
+            bool top = Topmost;
+            Topmost = true;
+            Topmost = top;
         }
 
         private void Preferences_Click(object sender, RoutedEventArgs e)

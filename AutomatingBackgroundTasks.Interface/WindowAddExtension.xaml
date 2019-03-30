@@ -21,7 +21,7 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="Extension" Margin="5 1"/>
         <TextBox Name="Extension" Grid.Column="1" MaxLines ="1" HorizontalAlignment="Stretch" Margin="3" 
-                 AcceptsReturn="False" AcceptsTab="False" TextInput="Extension_OnTextInput"/>
-        <Button Grid.Column="2" Content="Add" Click="Add_Click"/>
+                 AcceptsReturn="False" AcceptsTab="False" TextInput="Extension_OnTextInput" KeyUp="Extension_OnKeyUp"/>
+        <Button Grid.Column="2" Content="Done" Click="Add_Click"/>
     </Grid>
 </Window>
