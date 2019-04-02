@@ -8,10 +8,10 @@
         StateChanged="this_StateChanged"
         Closed="this_Closed"
         Loaded="this_Loaded"
+        ShowActivated="True"
         WindowStartupLocation="Manual"
         Title="My Background Tasks Automator"
-        SizeToContent="WidthAndHeight"
-        Height="Auto" Width="Auto"
+        SizeToContent="Manual"
         MinHeight="300" MinWidth="400"
         Icon="Dakirby309-Windows-8-Metro-Drives-CD-Metro.ico" d:DataContext="{d:DesignData WindowMain}">
     <Grid>

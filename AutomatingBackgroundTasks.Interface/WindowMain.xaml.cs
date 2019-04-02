@@ -10,10 +10,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
-using AutomatingBackgroundTasks.Interface.Properties;
 using ContextMenu = System.Windows.Forms.ContextMenu;
 using MenuItem = System.Windows.Forms.MenuItem;
-using MessageBox = System.Windows.MessageBox;
+using Size = System.Windows.Size;
 
 namespace AutomatingBackgroundTasks.Interface
 {
@@ -57,6 +56,9 @@ namespace AutomatingBackgroundTasks.Interface
         }
         private void this_Loaded(object sender, RoutedEventArgs e)
         {
+            //RenderSize = new Size(Preferences.Default.MainWindowSize.Item2, Preferences.Default.MainWindowSize.Item1);
+            (Height, Width) = Preferences.Default.MainWindowSize;
+
             var popup = new[]
             {
                 new MenuItem {Text = "Open"},
@@ -123,6 +125,7 @@ namespace AutomatingBackgroundTasks.Interface
         {
             Preferences.Default.Settings = Tasks.ToArray();
             Preferences.Default.LastMainWindowPosition = (Top, Left);
+            Preferences.Default.MainWindowSize = (ActualHeight, ActualWidth);
             Preferences.Default.Save();
             foreach (MyTask task in Tasks)
             {

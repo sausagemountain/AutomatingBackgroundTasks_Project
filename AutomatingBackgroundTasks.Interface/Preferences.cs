@@ -69,7 +69,8 @@ namespace AutomatingBackgroundTasks.Interface
         public bool AlwaysShowTrayIcon { get; set; } = true;
         public bool MinimizeToTray { get; set; } = true;
 
-        public (double, double) LastMainWindowPosition { get; set; } = (0, 0);
+        public (double, double) LastMainWindowPosition { get; set; } = (10, 10);
+        public (double, double) MainWindowSize { get; set; } = (300, 500);
         public bool MainWindowTopmost { get; set; } = false;
 
         private Preferences() { }
