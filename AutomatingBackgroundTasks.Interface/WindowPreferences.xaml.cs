@@ -12,13 +12,11 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void SaveSettings(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.Save();
+            Preferences.Default.Save();
         }
 
         private void this_Closing(object sender, CancelEventArgs e)
         {
-            Hide();
-            e.Cancel = true;
         }
     }
 }

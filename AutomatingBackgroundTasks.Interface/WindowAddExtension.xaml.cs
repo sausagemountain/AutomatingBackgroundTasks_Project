@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace AutomatingBackgroundTasks.Interface
@@ -15,17 +16,19 @@ namespace AutomatingBackgroundTasks.Interface
             Extension.Text = ext;
         }
 
-        public string NewExtenison { get; set; } = string.Empty;
+        public string NewExtension { get; set; } = string.Empty;
         private void Add_Click(object sender, RoutedEventArgs e)
         {
-            NewExtenison = Extension.Text;
-            Extension.Text = "";
+            if(!Extension.Text.StartsWith("."))
+                NewExtension = ".";
+            NewExtension += Extension.Text;
+            //Extension.Text = "";
             Close();
         }
 
         static readonly string[] WrongSymbols =
         {
-            ".",
+            " ",
             ",",
             "\\",
             "/",
@@ -40,7 +43,7 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void Extension_OnTextInput(object sender, TextCompositionEventArgs e)
         {
-            var newText = e.Text;
+            var newText = Extension.Text;
             foreach (var s in WrongSymbols)
                 newText = newText.Replace(s, "");
 
@@ -49,8 +52,6 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void this_Closing(object sender, CancelEventArgs e)
         {
-            Hide();
-            e.Cancel = true;
         }
 
         private void this_Loaded(object sender, RoutedEventArgs e)
@@ -63,6 +64,16 @@ namespace AutomatingBackgroundTasks.Interface
             if (e.Key == Key.Enter) {
                 Add_Click(null, null);
             }
+        }
+
+        private void Extension_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var newText = Extension.Text;
+            foreach (var s in WrongSymbols)
+                newText = newText.Replace(s, "");
+            //newText = newText.Replace("..", ".");
+
+            Extension.Text = newText;
         }
     }
 }

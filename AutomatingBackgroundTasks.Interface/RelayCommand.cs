@@ -17,10 +17,11 @@ namespace AutomatingBackgroundTasks.Interface
             this._canExecute = canExecute;
             this._execute = execute;
         }
-        public RelayCommand(bool canExecute, Action<object> execute)
+        public RelayCommand(bool canExecute, Action<object> execute) : this(o => canExecute, execute)
         {
-            this._canExecute = (o) => canExecute;
-            this._execute = execute;
+        }
+        public RelayCommand(Action<object> execute): this(true, execute)
+        {
         }
 
         public event EventHandler CanExecuteChanged

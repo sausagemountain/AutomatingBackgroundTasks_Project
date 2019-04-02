@@ -4,12 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
-        xmlns:properties="clr-namespace:AutomatingBackgroundTasks.Interface.Properties"
         mc:Ignorable="d"
         Loaded="this_Loaded"
         Closing="this_Closing"
         WindowStartupLocation="CenterOwner"
-        Title="Add Extention to Organise" 
+        Title="Add Extention" 
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
         >
@@ -21,7 +20,7 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="Extension" Margin="5 1"/>
         <TextBox Name="Extension" Grid.Column="1" MaxLines ="1" HorizontalAlignment="Stretch" Margin="3" 
-                 AcceptsReturn="False" AcceptsTab="False" TextInput="Extension_OnTextInput" KeyUp="Extension_OnKeyUp"/>
+                 AcceptsReturn="False" AcceptsTab="False" TextInput="Extension_OnTextInput" KeyUp="Extension_OnKeyUp" TextChanged="Extension_OnTextChanged"/>
         <Button Grid.Column="2" Content="Done" Click="Add_Click"/>
     </Grid>
 </Window>

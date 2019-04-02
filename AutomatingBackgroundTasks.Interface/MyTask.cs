@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -38,6 +39,24 @@ namespace AutomatingBackgroundTasks.Interface
         [XmlAttribute]
         public bool Recursive { get; set; } = false;
 
+
+        [XmlIgnore]
+        public ObservableCollection<string> ExtensionCollection = new ObservableCollection<string>();
+
+        [XmlArray]
+        public string[] Extensions
+        {
+            get => ExtensionCollection.ToArray();
+            set
+            {
+                ExtensionCollection.Clear();
+                foreach (string s in value)
+                {
+                    ExtensionCollection.Add(s);
+                }
+            }
+        }
+
         public void CheckFiles()
         {
             Console.WriteLine("Started!");
@@ -60,7 +79,7 @@ namespace AutomatingBackgroundTasks.Interface
                     catch { }
                 if (allFiles.Length == 0)
                     continue;
-                allFiles = allFiles.Where(e => MySettings.Default.Extensions.Contains(e.Extension.ToLower())).ToArray();
+                allFiles = allFiles.Where(e => Extensions.Contains(e.Extension.ToLower())).ToArray();
                 if (allFiles.Length == 0)
                     continue;
 
@@ -85,6 +104,7 @@ namespace AutomatingBackgroundTasks.Interface
                         catch { }
                 }
             }
+            Console.WriteLine("Finished!");
         }
     }
 }

@@ -7,13 +7,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace AutomatingBackgroundTasks.Interface
 {
@@ -56,17 +57,12 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var diag = new CommonOpenFileDialog(DialogName) {
-                IsFolderPicker = true,
-                Title = DialogName,
-                DefaultDirectory = Path,
-                InitialDirectory = Path,
-                Multiselect = false,
-                ShowHiddenItems = true,
-                ShowPlacesList = true,
+            var dialog = new FolderBrowserDialog() {
+                Description = DialogName,
+                ShowNewFolderButton = true,
             };
-            diag.ShowDialog();
-            Path = diag.FileName;
+            if (dialog.ShowDialog() == DialogResult.OK)
+                Path = dialog.SelectedPath;
         }
 
         private void Thing_OnTextChanged(object sender, TextChangedEventArgs e)

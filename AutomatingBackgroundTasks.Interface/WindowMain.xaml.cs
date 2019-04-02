@@ -7,10 +7,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using AutomatingBackgroundTasks.Interface.Properties;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using ContextMenu = System.Windows.Forms.ContextMenu;
+using MenuItem = System.Windows.Forms.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 
 namespace AutomatingBackgroundTasks.Interface
@@ -20,25 +22,36 @@ namespace AutomatingBackgroundTasks.Interface
         public WindowMain()
         {
             InitializeComponent();
+
+            (Top, Left) = Preferences.Default.LastMainWindowPosition;
+            Pref.Command = new RelayCommand(o => {
+                var preferences = new WindowPreferences { Owner = this };
+                preferences.ShowDialog();
+                Topmost = Preferences.Default.MainWindowTopmost;
+                appIcon.Visible = Preferences.Default.AlwaysShowTrayIcon;
+            });
+
             AddPathItem.Command = new RelayCommand(true, o => {
                 Tasks.Add(new MyTask());
             });
-            AddExtItem.Command = new RelayCommand(true, o => {
+            AddExtItem.Command = new RelayCommand(o =>  ItemsGrid.SelectedIndex != -1, o => {
                 var addExtensionDialog = new WindowAddExtension { Owner = this };
                 addExtensionDialog.ShowDialog();
-                ExtensionCollection.Add(addExtensionDialog.NewExtenison);
+                if (!string.IsNullOrWhiteSpace(addExtensionDialog.NewExtension))
+                    ExtensionCollection.Add(addExtensionDialog.NewExtension);
             });
-            EditExtItem.Command = new RelayCommand(o => ExtensionList.SelectedIndex != -1, o => {
+            EditExtItem.Command = new RelayCommand(o => ExtensionList.SelectedIndex != -1 && ItemsGrid.SelectedIndex != -1, o => {
                 var addExtensionDialog = new WindowAddExtension(ExtensionCollection[ExtensionList.SelectedIndex].Clone() as string) { Owner = this };
                 addExtensionDialog.ShowDialog();
                 ExtensionCollection.RemoveAt(ExtensionList.SelectedIndex);
-                ExtensionCollection.Add(addExtensionDialog.NewExtenison);
+                if (!string.IsNullOrWhiteSpace(addExtensionDialog.NewExtension))
+                    ExtensionCollection.Add(addExtensionDialog.NewExtension);
             });
             RemovePathItem.Command = new RelayCommand(o => ItemsGrid.SelectedIndex != -1, o => {
                 Tasks[ItemsGrid.SelectedIndex].IsMoving = false;
                 Tasks.RemoveAt(ItemsGrid.SelectedIndex);
             });
-            RemoveExtItem.Command = new RelayCommand(o => ExtensionList.SelectedIndex != -1, o => {
+            RemoveExtItem.Command = new RelayCommand(o => ExtensionList.SelectedIndex != -1 && ItemsGrid.SelectedIndex != -1, o => {
                 ExtensionCollection.RemoveAt(ExtensionList.SelectedIndex);
             });
         }
@@ -69,7 +82,7 @@ namespace AutomatingBackgroundTasks.Interface
                     {
                         ContextMenu = new ContextMenu(popup),
                         Icon = System.Drawing.Icon.FromHandle(bitmap.GetHicon()),
-                        Visible = MySettings.Default.AlwaysShowTrayIcon
+                        Visible = Preferences.Default.AlwaysShowTrayIcon
                     };
                 }
             }
@@ -92,7 +105,7 @@ namespace AutomatingBackgroundTasks.Interface
             switch (WindowState)
             {
                 case WindowState.Minimized:
-                    if (MySettings.Default.MinimizeToTray)
+                    if (Preferences.Default.MinimizeToTray)
                     {
                         appIcon.Visible = true;
                         Hide();
@@ -100,20 +113,21 @@ namespace AutomatingBackgroundTasks.Interface
 
                     break;
                 default:
-                    if (MySettings.Default.MinimizeToTray)
-                        if (!MySettings.Default.AlwaysShowTrayIcon)
+                    if (Preferences.Default.MinimizeToTray)
+                        if (!Preferences.Default.AlwaysShowTrayIcon)
                             appIcon.Visible = false;
                     break;
             }
         }
         private void this_Closed(object sender, EventArgs e)
         {
-            MySettings.Default.Settings = Tasks.ToArray();
+            Preferences.Default.Settings = Tasks.ToArray();
+            Preferences.Default.LastMainWindowPosition = (Top, Left);
+            Preferences.Default.Save();
             foreach (MyTask task in Tasks)
             {
                 task.IsMoving = false;
             }
-            MySettings.Default.Save();
 
             if(appIcon != null)
                 appIcon.Dispose();
@@ -121,33 +135,19 @@ namespace AutomatingBackgroundTasks.Interface
 
         public NotifyIcon appIcon;
         public Thread FileChecker;
-        public static ObservableCollection<MyTask> Tasks { get; set; } = new ObservableCollection<MyTask>(MySettings.Default.Settings);
-        public static ObservableCollection<string> ExtensionCollection { get; set; } = new ObservableCollection<string>(MySettings.Default.Extensions);
+        public static ObservableCollection<MyTask> Tasks { get; set; } = new ObservableCollection<MyTask>(Preferences.Default.Settings);
+        public static ObservableCollection<string> ExtensionCollection { get; set; } = new ObservableCollection<string>();
         
-
-        protected void WndProc(ref Message m)
+        private void ItemsGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (m.Msg == NativeMethods.WM_SHOWME)
-            {
-                ShowMe();
+            if (ItemsGrid.SelectedIndex != -1) {
+                ExtensionCollection = Tasks[ItemsGrid.SelectedIndex].ExtensionCollection;
             }
-            //base.WndProc(ref m);
-        }
-        private void ShowMe()
-        {
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
+            else {
+                ExtensionCollection = new ObservableCollection<string>();
             }
-            bool top = Topmost;
-            Topmost = true;
-            Topmost = top;
-        }
 
-        private void Preferences_Click(object sender, RoutedEventArgs e)
-        {
-            var preferences = new WindowPreferences { Owner = this };
-            preferences.ShowDialog();
+            ExtensionList.ItemsSource = ExtensionCollection;
         }
     }
 }

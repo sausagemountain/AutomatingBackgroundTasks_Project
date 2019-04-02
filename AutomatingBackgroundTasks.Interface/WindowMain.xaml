@@ -4,12 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
-        xmlns:properties="clr-namespace:AutomatingBackgroundTasks.Interface.Properties"
         mc:Ignorable="d"
         StateChanged="this_StateChanged"
         Closed="this_Closed"
         Loaded="this_Loaded"
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="Manual"
         Title="My Background Tasks Automator"
         SizeToContent="WidthAndHeight"
         Height="Auto" Width="Auto"
@@ -17,12 +16,11 @@
         Icon="Dakirby309-Windows-8-Metro-Drives-CD-Metro.ico" d:DataContext="{d:DesignData WindowMain}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
-            <!--<RowDefinition Height="20"/>-->
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
-            <MenuItem Header="Preferences" Click="Preferences_Click"/>
+            <MenuItem Name="Pref" Header="Preferences"/>
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -34,11 +32,11 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <ListView Name="ItemsGrid" ItemsSource="{Binding Source={x:Static local:WindowMain.Tasks}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" SelectionMode="Single">
+                <ListView Name="ItemsGrid" ItemsSource="{Binding Source={x:Static local:WindowMain.Tasks}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" SelectionMode="Single" SelectionChanged="ItemsGrid_OnSelectionChanged" >
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Name="AddPathItem" Header="Add Path"/>
-                            <MenuItem Name="RemovePathItem" Header="Remove Path"/>
+                            <MenuItem Name="AddPathItem" Header="Add Rule"/>
+                            <MenuItem Name="RemovePathItem" Header="Remove Rule"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.View>

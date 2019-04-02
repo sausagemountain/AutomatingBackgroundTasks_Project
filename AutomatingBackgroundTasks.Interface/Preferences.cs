@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -17,10 +18,10 @@ namespace AutomatingBackgroundTasks.Interface
     [XmlInclude(typeof(MyTask))]
     [XmlInclude(typeof(string))]
     [XmlInclude(typeof(MyTask[]))]
-    [XmlInclude(typeof(MySettings))]
-    public class MySettings
+    [XmlInclude(typeof(Preferences))]
+    public class Preferences
     {
-        public static MySettings Default { get; set; } = MySettings.Read();
+        public static Preferences Default { get; set; } = Read();
 
         public int Count => _settings.Count;
 
@@ -32,44 +33,27 @@ namespace AutomatingBackgroundTasks.Interface
 
         public void Save()
         {
-            using (var fs = new FileStream(".\\settings.xml", FileMode.Create))
+            using (var fs = new FileStream(Filename, FileMode.Create))
             {
-                var xf = new XmlSerializer(typeof(MySettings));
+                var xf = new XmlSerializer(typeof(Preferences));
                 xf.Serialize(fs, this);
             }
         }
 
-        [XmlIgnore]
-        public ObservableCollection<string> ExtensionCollection = new ObservableCollection<string>();
-
-        [XmlArray]
-        public string[] Extensions
+        protected static string Filename => Path.Combine(Path.GetDirectoryName(Path.GetFullPath(Assembly.GetEntryAssembly().Location)), "prefs.xml");
+        protected static Preferences Read()
         {
-            get => ExtensionCollection.ToArray();
-            set
-            {
-                ExtensionCollection.Clear();
-                foreach (string s in value) {
-                    ExtensionCollection.Add(s);
-                }
-            }
-        }
-
-        public static MySettings Read()
-        {
-            MySettings res = new MySettings();
+            Preferences res = new Preferences();
             try {
-
-                using (var fs = new FileStream(".\\settings.xml", FileMode.OpenOrCreate))
+                using (var fs = new FileStream(Filename, FileMode.OpenOrCreate))
                 {
-                    var xf = new XmlSerializer(typeof(MySettings));
-                    res = (MySettings) xf.Deserialize(fs);
+                    var xf = new XmlSerializer(typeof(Preferences));
+                    res = (Preferences) xf.Deserialize(fs);
                 }
             }
             catch (Exception e) {
                 Console.WriteLine(e);
             }
-
             return res;
         }
 
@@ -85,7 +69,9 @@ namespace AutomatingBackgroundTasks.Interface
         public bool AlwaysShowTrayIcon { get; set; } = true;
         public bool MinimizeToTray { get; set; } = true;
 
+        public (double, double) LastMainWindowPosition { get; set; } = (0, 0);
+        public bool MainWindowTopmost { get; set; } = false;
 
-        private MySettings() { }
+        private Preferences() { }
     }
 }

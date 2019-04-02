@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
-        xmlns:properties="clr-namespace:AutomatingBackgroundTasks.Interface.Properties"
         mc:Ignorable="d"
         Closing="this_Closing"
         Title="Preferences"
@@ -14,17 +13,17 @@
         MinHeight="110" MinWidth="250">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <CheckBox Name="MinimizeToTrayCheck"
-                      Checked="SaveSettings" Unchecked="SaveSettings">
-                <CheckBox.IsChecked>
-                    <Binding Source="{x:Static local:MySettings.Default}" Path="MinimizeToTray" />
-                </CheckBox.IsChecked>
+            <CheckBox Name="MinimizeToTrayCheck" Checked="SaveSettings" Unchecked="SaveSettings"
+                      IsChecked="{Binding Source={x:Static local:Preferences.Default}, Path=MinimizeToTray}">
                 <TextBlock Text="Minimize to Tray"/>
             </CheckBox>
-            <CheckBox Name="ShowTrayIconCheck" 
-                      IsChecked="{Binding Source={x:Static local:MySettings.Default}, Path=AlwaysShowTrayIcon}" 
-                      Checked="SaveSettings" Unchecked="SaveSettings">
+            <CheckBox Name="ShowTrayIconCheck" Checked="SaveSettings" Unchecked="SaveSettings"
+                      IsChecked="{Binding Source={x:Static local:Preferences.Default}, Path=AlwaysShowTrayIcon}" >
                 <TextBlock Text="Always Show Tray Icon"/>
+            </CheckBox>
+            <CheckBox Name="OnTop" Checked="SaveSettings" Unchecked="SaveSettings"
+                      IsChecked="{Binding Source={x:Static local:Preferences.Default}, Path=MainWindowTopmost}">
+                <TextBlock Text="Stays on Top"/>
             </CheckBox>
         </StackPanel>
     </Grid>
