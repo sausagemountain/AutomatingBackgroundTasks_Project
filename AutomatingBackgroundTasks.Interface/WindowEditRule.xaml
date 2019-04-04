@@ -1,0 +1,67 @@
+﻿<Window x:Class="AutomatingBackgroundTasks.Interface.WindowEditRule"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight"
+        Title="WindowEditRule" MinHeight="300" MinWidth="300">
+
+    <Window.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}"
+                            x:Key="NamingRulesEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:NamingRules" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}"
+                            x:Key="MoveSettingsEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:MoveSettings" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <CheckBox IsChecked="{Binding Source=Task, Path=IsMoving}">
+                <TextBlock Text ="Enabled"/>
+            </CheckBox>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Source Path: "/>
+                <local:PathSelector/>
+            </StackPanel>
+            <CheckBox Name="DestinationCheck">
+                <StackPanel Orientation="Horizontal" IsEnabled="{Binding IsChecked, Source=DestinationCheck}">
+                    <TextBlock Text="Destination Path: "/>
+                    <local:PathSelector Path="{Binding Source=Task, Path=DestinationPathWrapper}"/>
+                </StackPanel>
+            </CheckBox>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Naming Rule: "/>
+                <ComboBox ItemsSource="{Binding Source={StaticResource NamingRulesEnumValues}}" SelectionChanged="Naming_OnSelectionChanged"/>
+            </StackPanel>
+            <TextBlock Name="Rules" TextAlignment="Center">
+                extension is added to the end automatically <LineBreak/>
+                {0} is name <LineBreak/>
+                {1} is extension <LineBreak/>
+                {2} is creation time <LineBreak/>
+                {3} is last write time <LineBreak/>
+                {4} is last access time
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Visibility="{Binding Source=Rules, Path=Visibility}">
+                <TextBlock Text="Name: "/>
+                <TextBox Text="{Binding Source=Task, Path=CustomNameWrapper}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Move: "/>
+                <ComboBox ItemsSource="{Binding Source={StaticResource MoveSettingsEnumValues}}"
+                          SelectionChanged="Move_OnSelectionChanged"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

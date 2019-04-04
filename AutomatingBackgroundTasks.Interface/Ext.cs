@@ -10,6 +10,17 @@ namespace AutomatingBackgroundTasks.Interface
 {
     public static partial class Ext
     {
+        public static void MoveTo(this FileSystemInfo fileOrDirectory, string destName)
+        {
+            if (fileOrDirectory is FileInfo fi) {
+                fi.MoveTo(destName);
+            }
+
+            if (fileOrDirectory is DirectoryInfo di) {
+                di.MoveTo(destName);
+            }
+        }
+
         public static bool IsDestChildOfSource(string source, string destination)
         {
             return destination.Contains(source);
@@ -28,20 +39,6 @@ namespace AutomatingBackgroundTasks.Interface
             }
 
             return (el.Parent as FrameworkElement).GetWindowParent();
-        }
-
-        public static FileInfo[] RecursiveGetFiles(this DirectoryInfo dir)
-        {
-            return dir.GetFilesRecursive().ToArray();
-        }
-
-        private static IEnumerable<FileInfo> GetFilesRecursive(this DirectoryInfo directory)
-        {
-            var result = directory.GetFiles().ToList();
-            var dirs = directory.GetDirectories();
-            foreach (var dir in dirs)
-                result.AddRange(dir.GetFilesRecursive());
-            return result;
         }
     }
 }

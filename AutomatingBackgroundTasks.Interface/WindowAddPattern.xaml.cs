@@ -5,24 +5,22 @@ using System.Windows.Input;
 
 namespace AutomatingBackgroundTasks.Interface
 {
-    public partial class WindowAddExtension : Window
+    public partial class WindowAddPattern : Window
     {
-        public WindowAddExtension()
+        public WindowAddPattern()
         {
             InitializeComponent();
         }
-        public WindowAddExtension(string ext): this()
+        public WindowAddPattern(string ext): this()
         {
-            Extension.Text = ext;
+            Pattern.Text = ext;
         }
 
         public string NewExtension { get; set; } = string.Empty;
         private void Add_Click(object sender, RoutedEventArgs e)
         {
-            if(!Extension.Text.StartsWith("."))
-                NewExtension = ".";
-            NewExtension += Extension.Text;
-            //Extension.Text = "";
+            NewExtension = Pattern.Text;
+            //Pattern.Text = "";
             Close();
         }
 
@@ -33,8 +31,6 @@ namespace AutomatingBackgroundTasks.Interface
             "\\",
             "/",
             ":",
-            "*",
-            "?",
             "\"",
             "<",
             ">",
@@ -43,11 +39,11 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void Extension_OnTextInput(object sender, TextCompositionEventArgs e)
         {
-            var newText = Extension.Text;
+            var newText = Pattern.Text;
             foreach (var s in WrongSymbols)
                 newText = newText.Replace(s, "");
 
-            Extension.Text = newText;
+            Pattern.Text = newText;
         }
 
         private void this_Closing(object sender, CancelEventArgs e)
@@ -56,7 +52,7 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void this_Loaded(object sender, RoutedEventArgs e)
         {
-            Extension.Focus();
+            Pattern.Focus();
         }
 
         private void Extension_OnKeyUp(object sender, KeyEventArgs e)
@@ -68,12 +64,12 @@ namespace AutomatingBackgroundTasks.Interface
 
         private void Extension_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            var newText = Extension.Text;
+            var newText = Pattern.Text;
             foreach (var s in WrongSymbols)
                 newText = newText.Replace(s, "");
             //newText = newText.Replace("..", ".");
 
-            Extension.Text = newText;
+            Pattern.Text = newText;
         }
     }
 }

@@ -10,9 +10,10 @@
         Loaded="this_Loaded"
         ShowActivated="True"
         WindowStartupLocation="Manual"
-        Title="My Background Tasks Automator"
+        Title="Mover"
         SizeToContent="Manual"
         MinHeight="300" MinWidth="400"
+        Height="300" Width="500"
         Icon="Dakirby309-Windows-8-Metro-Drives-CD-Metro.ico" d:DataContext="{d:DesignData WindowMain}">
     <Grid>
         <Grid.RowDefinitions>
@@ -35,13 +36,14 @@
                 <ListView Name="ItemsGrid" ItemsSource="{Binding Source={x:Static local:WindowMain.Tasks}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" SelectionMode="Single" SelectionChanged="ItemsGrid_OnSelectionChanged" >
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Name="AddPathItem" Header="Add Rule"/>
-                            <MenuItem Name="RemovePathItem" Header="Remove Rule"/>
+                            <MenuItem Name="AddRuleItem" Header="Add Rule"/>
+                            <MenuItem Name="EditRuleItem" Header="Edit Rule"/>
+                            <MenuItem Name="RemoveRuleItem" Header="Remove Rule"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="">
+                            <GridViewColumn Header="On">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox Padding="0" Margin="0" IsChecked="{Binding IsMoving}"/>
@@ -59,27 +61,27 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding UseDestination}" Margin="0" Padding="0">
-                                            <local:PathSelector DialogName="Select destination directory" Margin="0" Padding="0" IsEnabled="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type CheckBox}}}" Path="{Binding DestinationPath}"/>
+                                            <local:PathSelector DialogName="Select destination directory" Margin="0" Padding="0" IsEnabled="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type CheckBox}}}" Path="{Binding DestinationWrapper}"/>
                                         </CheckBox>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Recursive">
+                            <!--<GridViewColumn Header="RecursiveFiles">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox Padding="0" Margin="0" IsChecked="{Binding Recursive}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
+                            </GridViewColumn>-->
                         </GridView>
                     </ListView.View>
                 </ListView>
             </Grid>
-            <ListView Name="ExtensionList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Margin="4" ItemsSource="{Binding Source={x:Static local:WindowMain.ExtensionCollection}}" SelectionMode="Single">
+            <ListView Name="PatternList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Margin="4" ItemsSource="{Binding Source={x:Static local:WindowMain.PatternCollection}}" SelectionMode="Single">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding}">
-                            <GridViewColumnHeader Content="File Type"/>
+                            <GridViewColumnHeader Content="Pattern"/>
                         </GridViewColumn>
                     </GridView>
                 </ListView.View>

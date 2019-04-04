@@ -9,7 +9,33 @@ using System.Xml.Serialization;
 namespace AutomatingBackgroundTasks.Interface
 {
     [Serializable]
+    public enum NamingRules
+    {
+        None,
+        EarliestKnownDate,
+        /*
+        extension is added to the end automatically
+        {0} is name
+        {1} is extension
+        {2} is creation time
+        {3} is last write time
+        {4} is last access time
+        */
+        Custom,
+    }
+
+    [Serializable]
+    public enum MoveSettings
+    {
+        Files,
+        FilesInSubfolders,
+        Folders,
+        FilesAndFolders,
+    }
+
+    [Serializable]
     [XmlInclude(typeof(MyTask))]
+    [XmlInclude(typeof(NamingRules))]
     public class MyTask
     {
         [XmlIgnore]
@@ -23,7 +49,9 @@ namespace AutomatingBackgroundTasks.Interface
             {
                 _isMoving = value;
                 if (_isMoving) {
-                    var thread = new Thread(CheckFiles);
+                    var thread = new Thread(CheckFiles) {
+                        IsBackground = true,
+                    };
                     thread.Start();
                 }
             }
@@ -37,22 +65,38 @@ namespace AutomatingBackgroundTasks.Interface
         [XmlAttribute]
         public bool UseDestination { get; set; } = false;
         [XmlAttribute]
-        public bool Recursive { get; set; } = false;
+        public NamingRules Rule { get; set; } = NamingRules.None;
+        [XmlAttribute]
+        public MoveSettings MoveOnly { get; set; } = MoveSettings.Files;
+        [XmlAttribute]
+        public string CustomName { get; set; } = "{0}";
 
 
         [XmlIgnore]
-        public ObservableCollection<string> ExtensionCollection = new ObservableCollection<string>();
+        public string DestinationWrapper
+        {
+            get => UseDestination? DestinationPath: string.Empty;
+            set => DestinationPath = value;
+        }
+        [XmlIgnore]
+        public ObservableCollection<string> PatternCollection = new ObservableCollection<string>();
+        [XmlIgnore]
+        public string CustomNameWrapper
+        {
+            get => Rule == NamingRules.Custom? CustomName: string.Empty;
+            set => CustomName = value;
+        }
 
         [XmlArray]
-        public string[] Extensions
+        public string[] Patterns
         {
-            get => ExtensionCollection.ToArray();
+            get => PatternCollection.ToArray();
             set
             {
-                ExtensionCollection.Clear();
+                PatternCollection.Clear();
                 foreach (string s in value)
                 {
-                    ExtensionCollection.Add(s);
+                    PatternCollection.Add(s);
                 }
             }
         }
@@ -70,25 +114,57 @@ namespace AutomatingBackgroundTasks.Interface
                 Thread.Sleep(1000);
 
                 source.Refresh();
-                FileInfo[] allFiles = null;
+                var allFiles = new List<FileSystemInfo>();
 
-                while (allFiles == null)
-                    try {
-                        allFiles = Recursive ? source.RecursiveGetFiles() : source.GetFiles();
+                foreach (var pattern in PatternCollection) {
+                    try
+                    {
+                        switch (MoveOnly)
+                        {
+                            case MoveSettings.Files:
+                                allFiles.AddRange(source.GetFiles(pattern));
+                                break;
+                            case MoveSettings.FilesInSubfolders:
+                                allFiles.AddRange(source.GetFiles(pattern, SearchOption.AllDirectories));
+                                break;
+                            case MoveSettings.Folders:
+                                allFiles.AddRange(source.GetDirectories(pattern));
+                                break;
+                            case MoveSettings.FilesAndFolders:
+                                allFiles.AddRange(source.GetFiles(pattern));
+                                allFiles.AddRange(source.GetDirectories(pattern));
+                                break;
+                        }
                     }
                     catch { }
-                if (allFiles.Length == 0)
+                }
+
+                if (allFiles.Count == 0)
                     continue;
-                allFiles = allFiles.Where(e => Extensions.Contains(e.Extension.ToLower())).ToArray();
-                if (allFiles.Length == 0)
+
+                allFiles = allFiles.Distinct().ToList();
+
+                if (allFiles.Count == 0)
                     continue;
 
-                foreach (FileInfo file in allFiles) {
-                    var baseName = file.LastWriteTime.GetDateTimeFormats()[46].Replace('-', '\\').Replace(':', '-').Replace('T', ' ');
+                foreach (var file in allFiles) {
 
-                    string newName = Path.GetFullPath(Path.Combine(UseDestination ? dest.FullName : source.FullName, $"{baseName}{file.Extension.ToLower()}"));
+                    string baseName = file.Name;
+                    switch (Rule) {
+                        case NamingRules.None:
+                            break;
+                        case NamingRules.EarliestKnownDate: {
+                            baseName = new[] { file.CreationTime, file.LastAccessTime, file.LastWriteTime }.Min().ToString("yyyy\\MM\\dd HH-mm-ss");
+                            break;
+                        }
+                        case NamingRules.Custom:
+                            baseName = string.Format(CustomName, file.Name, file.Extension.Trim('.'), file.CreationTime, file.LastWriteTime, file.LastAccessTime);
+                            break;
+                    }
 
-                    for(int i = 1;;i++)
+                    string newName = Path.GetFullPath(Path.Combine(UseDestination ? dest.FullName : source.FullName, $"{baseName}{file.Extension}"));
+
+                    for(int i = 1;;)
                         try {
                             if (!File.Exists(newName)) {
                                 Directory.CreateDirectory(Path.GetDirectoryName(newName));
@@ -96,7 +172,9 @@ namespace AutomatingBackgroundTasks.Interface
                             }
                             else {
                                 newName = Path.Combine(Path.GetDirectoryName(newName),
-                                    $"{baseName} ({i})" + Path.GetExtension(newName));
+                                    Path.GetFileNameWithoutExtension(baseName) +
+                                    $" ({++i})" + 
+                                    Path.GetExtension(baseName));
                                 continue;
                             }
                             break;

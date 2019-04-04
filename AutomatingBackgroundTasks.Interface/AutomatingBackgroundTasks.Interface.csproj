@@ -101,13 +101,20 @@
     </Compile>
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="WindowEditRule.xaml.cs">
+      <DependentUpon>WindowEditRule.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowPreferences.xaml.cs">
       <DependentUpon>WindowPreferences.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowAddExtension.xaml.cs">
-      <DependentUpon>WindowAddExtension.xaml</DependentUpon>
+    <Compile Include="WindowAddPattern.xaml.cs">
+      <DependentUpon>WindowAddPattern.xaml</DependentUpon>
     </Compile>
     <Page Include="PathSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowEditRule.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -127,7 +134,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WindowAddExtension.xaml">
+    <Page Include="WindowAddPattern.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
