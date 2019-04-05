@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using Application = System.Windows.Application;
 using ContextMenu = System.Windows.Forms.ContextMenu;
 using MenuItem = System.Windows.Forms.MenuItem;
 using Size = System.Windows.Size;
@@ -35,7 +36,7 @@ namespace AutomatingBackgroundTasks.Interface
             AddRuleItem.Command = new RelayCommand(true, o => {
                 var editRule = new WindowEditRule(new MyTask()) { Owner = this };
                 editRule.ShowDialog();
-                Tasks.Add(editRule.Task);
+                Tasks.Add(WindowEditRule.Task);
             });
             AddExtItem.Command = new RelayCommand(o =>  ItemsGrid.SelectedIndex != -1, o => {
                 var addExtensionDialog = new WindowAddPattern { Owner = this };
@@ -46,6 +47,8 @@ namespace AutomatingBackgroundTasks.Interface
             EditRuleItem.Command = new RelayCommand(o => ItemsGrid.SelectedIndex != -1, o => {
                 var editRule = new WindowEditRule(Tasks[ItemsGrid.SelectedIndex]) {Owner = this};
                 editRule.ShowDialog();
+                if (!Tasks.Contains(WindowEditRule.Task))
+                    Tasks.Add(WindowEditRule.Task);
             });
             EditExtItem.Command = new RelayCommand(o => PatternList.SelectedIndex != -1 && ItemsGrid.SelectedIndex != -1, o => {
                 var addExtensionDialog = new WindowAddPattern(PatternCollection[PatternList.SelectedIndex].Clone() as string) { Owner = this };
@@ -76,6 +79,9 @@ namespace AutomatingBackgroundTasks.Interface
 
             if(appIcon != null)
                 appIcon.Dispose();
+            foreach (Window win in Application.Current.Windows) {
+                win.Close();
+            }
         }
         private void this_StateChanged(object sender, EventArgs e)
         {

@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutomatingBackgroundTasks.Interface"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        mc:Ignorable="d"
+        mc:Ignorable="d" Closing="this_OnClosing"
         WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight"
-        Title="WindowEditRule" MinHeight="300" MinWidth="300">
+        Title="Edit Rule" MinHeight="300" MinWidth="300">
 
     <Window.Resources>
         <ObjectDataProvider MethodName="GetValues"
@@ -27,41 +27,55 @@
     </Window.Resources>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical">
-            <CheckBox IsChecked="{Binding Source=Task, Path=IsMoving}">
-                <TextBlock Text ="Enabled"/>
+            <CheckBox IsChecked="{Binding Source={x:Static local:WindowEditRule.Task}, Path=IsMoving}">
+                Enabled
             </CheckBox>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Source Path: "/>
-                <local:PathSelector/>
+                <local:PathSelector Path="{Binding Source={x:Static local:WindowEditRule.Task}, Path=SourcePath}"/>
             </StackPanel>
-            <CheckBox Name="DestinationCheck">
-                <StackPanel Orientation="Horizontal" IsEnabled="{Binding IsChecked, Source=DestinationCheck}">
+            <CheckBox IsChecked="{Binding Source={x:Static local:WindowEditRule.Task}, Path=UseDestination}">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Destination Path: "/>
-                    <local:PathSelector Path="{Binding Source=Task, Path=DestinationPathWrapper}"/>
+                    <local:PathSelector Path="{Binding Source={x:Static local:WindowEditRule.Task}, Path=DestinationWrapper}" 
+                                        IsEnabled="{Binding Source={x:Static local:WindowEditRule.Task}, Path=UseDestination}"/>
                 </StackPanel>
             </CheckBox>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Naming Rule: "/>
-                <ComboBox ItemsSource="{Binding Source={StaticResource NamingRulesEnumValues}}" SelectionChanged="Naming_OnSelectionChanged"/>
+                <ComboBox Name="Naming" ItemsSource="{Binding Source={StaticResource NamingRulesEnumValues}}" SelectionChanged="Naming_OnSelectionChanged"/>
             </StackPanel>
-            <TextBlock Name="Rules" TextAlignment="Center">
-                extension is added to the end automatically <LineBreak/>
-                {0} is name <LineBreak/>
-                {1} is extension <LineBreak/>
-                {2} is creation time <LineBreak/>
-                {3} is last write time <LineBreak/>
-                {4} is last access time
-            </TextBlock>
-            <StackPanel Orientation="Horizontal" Visibility="{Binding Source=Rules, Path=Visibility}">
-                <TextBlock Text="Name: "/>
-                <TextBox Text="{Binding Source=Task, Path=CustomNameWrapper}"/>
+            <StackPanel Name="Rules" Orientation="Horizontal">
+                <TextBlock Text="Name: " Cursor="Help" MouseDown="Help_OnMouseDown"/>
+                <TextBox Text="{Binding Source={x:Static local:WindowEditRule.Task}, Path=CustomName}" MaxLines="1" AcceptsReturn="False" AcceptsTab="False" AutoWordSelection="True"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Move: "/>
-                <ComboBox ItemsSource="{Binding Source={StaticResource MoveSettingsEnumValues}}"
+                <ComboBox Name="Move" ItemsSource="{Binding Source={StaticResource MoveSettingsEnumValues}}"
                           SelectionChanged="Move_OnSelectionChanged"/>
             </StackPanel>
         </StackPanel>
+
+        <ListView Name="PatternList" HorizontalAlignment="Center" HorizontalContentAlignment="Center" ItemsSource="{Binding Source={x:Static local:WindowEditRule.Task}, Path=PatternCollection}" SelectionMode="Single" Grid.Column="1">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding}">
+                        <GridViewColumnHeader Content="Pattern"/>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Name="AddExtItem" Header="Add"/>
+                    <MenuItem Name="EditExtItem" Header="Edit"/>
+                    <MenuItem Name="RemoveExtItem" Header="Remove"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+        </ListView>
     </Grid>
 </Window>

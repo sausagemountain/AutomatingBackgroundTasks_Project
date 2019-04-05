@@ -61,11 +61,13 @@ namespace AutomatingBackgroundTasks.Interface
             }
 
             Preferences.Default.ToString();
-            
             _messageGetter = new Thread(() => {
                 while (_isRunning)
                     ReceiveQueueMessage();
-            });
+            }) {
+                IsBackground = true,
+                Priority = ThreadPriority.BelowNormal,
+            };
             _messageGetter.IsBackground = true;
             _messageGetter.Start();
         }

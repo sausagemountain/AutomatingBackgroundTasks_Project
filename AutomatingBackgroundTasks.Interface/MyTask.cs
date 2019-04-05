@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows.Data;
 using System.Xml.Serialization;
 
 namespace AutomatingBackgroundTasks.Interface
@@ -20,6 +22,7 @@ namespace AutomatingBackgroundTasks.Interface
         {2} is creation time
         {3} is last write time
         {4} is last access time
+        {5} is earliest of the three dates
         */
         Custom,
     }
@@ -42,22 +45,6 @@ namespace AutomatingBackgroundTasks.Interface
         private bool _isMoving = false;
 
         [XmlAttribute]
-        public bool IsMoving
-        {
-            get => _isMoving;
-            set
-            {
-                _isMoving = value;
-                if (_isMoving) {
-                    var thread = new Thread(CheckFiles) {
-                        IsBackground = true,
-                    };
-                    thread.Start();
-                }
-            }
-        }
-
-        [XmlAttribute]
         public string SourcePath { get; set; } = string.Empty;
         [XmlAttribute]
         public string DestinationPath { get; set; } = string.Empty;
@@ -71,7 +58,7 @@ namespace AutomatingBackgroundTasks.Interface
         [XmlAttribute]
         public string CustomName { get; set; } = "{0}";
 
-
+        
         [XmlIgnore]
         public string DestinationWrapper
         {
@@ -79,13 +66,7 @@ namespace AutomatingBackgroundTasks.Interface
             set => DestinationPath = value;
         }
         [XmlIgnore]
-        public ObservableCollection<string> PatternCollection = new ObservableCollection<string>();
-        [XmlIgnore]
-        public string CustomNameWrapper
-        {
-            get => Rule == NamingRules.Custom? CustomName: string.Empty;
-            set => CustomName = value;
-        }
+        public ObservableCollection<string> PatternCollection { get; set; } = new ObservableCollection<string>();
 
         [XmlArray]
         public string[] Patterns
@@ -104,85 +85,121 @@ namespace AutomatingBackgroundTasks.Interface
         public void CheckFiles()
         {
             Console.WriteLine("Started!");
-            var source = new DirectoryInfo(SourcePath);
-            DirectoryInfo dest = source;
-            if (UseDestination)
-                dest = new DirectoryInfo(DestinationPath);
 
-            while (IsMoving)
-            {
-                Thread.Sleep(1000);
+            Timer tmr = null;
+            tmr = new Timer(o => {
+                try {
+                    if (!IsMoving) {
+                        tmr.Dispose();
+                        Console.WriteLine("Finished!");
+                    }
 
-                source.Refresh();
-                var allFiles = new List<FileSystemInfo>();
+                    var source = new DirectoryInfo(SourcePath);
+                    if (!source.Exists) {
+                        IsMoving = false;
+                        return;
+                    }   
 
-                foreach (var pattern in PatternCollection) {
-                    try
+                    DirectoryInfo dest = source;
+                    if (UseDestination)
+                        dest = new DirectoryInfo(DestinationPath);
+                    var allFiles = new List<FileSystemInfo>();
+
+                    var pc = PatternCollection;
+                    if(pc.Count == 0)
+                        pc = new ObservableCollection<string>(){"*"};
+
+                    foreach (var pattern in pc)
                     {
-                        switch (MoveOnly)
-                        {
-                            case MoveSettings.Files:
-                                allFiles.AddRange(source.GetFiles(pattern));
-                                break;
-                            case MoveSettings.FilesInSubfolders:
-                                allFiles.AddRange(source.GetFiles(pattern, SearchOption.AllDirectories));
-                                break;
-                            case MoveSettings.Folders:
-                                allFiles.AddRange(source.GetDirectories(pattern));
-                                break;
-                            case MoveSettings.FilesAndFolders:
-                                allFiles.AddRange(source.GetFiles(pattern));
-                                allFiles.AddRange(source.GetDirectories(pattern));
-                                break;
-                        }
-                    }
-                    catch { }
-                }
-
-                if (allFiles.Count == 0)
-                    continue;
-
-                allFiles = allFiles.Distinct().ToList();
-
-                if (allFiles.Count == 0)
-                    continue;
-
-                foreach (var file in allFiles) {
-
-                    string baseName = file.Name;
-                    switch (Rule) {
-                        case NamingRules.None:
-                            break;
-                        case NamingRules.EarliestKnownDate: {
-                            baseName = new[] { file.CreationTime, file.LastAccessTime, file.LastWriteTime }.Min().ToString("yyyy\\MM\\dd HH-mm-ss");
-                            break;
-                        }
-                        case NamingRules.Custom:
-                            baseName = string.Format(CustomName, file.Name, file.Extension.Trim('.'), file.CreationTime, file.LastWriteTime, file.LastAccessTime);
-                            break;
-                    }
-
-                    string newName = Path.GetFullPath(Path.Combine(UseDestination ? dest.FullName : source.FullName, $"{baseName}{file.Extension}"));
-
-                    for(int i = 1;;)
                         try {
-                            if (!File.Exists(newName)) {
-                                Directory.CreateDirectory(Path.GetDirectoryName(newName));
-                                file.MoveTo(newName);
+                            source.Refresh();
+                            switch (MoveOnly) {
+                                case MoveSettings.Files:
+                                    allFiles.AddRange(source.GetFiles(pattern));
+                                    break;
+                                case MoveSettings.FilesInSubfolders:
+                                    allFiles.AddRange(source.GetFiles(pattern, SearchOption.AllDirectories));
+                                    break;
+                                case MoveSettings.Folders:
+                                    allFiles.AddRange(source.GetDirectories(pattern));
+                                    break;
+                                case MoveSettings.FilesAndFolders:
+                                    allFiles.AddRange(source.GetFiles(pattern));
+                                    allFiles.AddRange(source.GetDirectories(pattern));
+                                    break;
                             }
-                            else {
-                                newName = Path.Combine(Path.GetDirectoryName(newName),
-                                    Path.GetFileNameWithoutExtension(baseName) +
-                                    $" ({++i})" + 
-                                    Path.GetExtension(baseName));
-                                continue;
-                            }
-                            break;
                         }
-                        catch { }
+                        catch (Exception e) {
+                            Console.WriteLine(e);
+                        }
+                    }
+
+                    if (allFiles.Count == 0)
+                        return;
+
+                    allFiles = allFiles.Distinct().ToList();
+
+                    if (allFiles.Count == 0)
+                        return;
+
+                    foreach (var file in allFiles)
+                    {
+                        if(!file.Exists)
+                            continue;
+
+                        string baseName = file.Name;
+                        string cn = CustomName;
+                        if (Rule == NamingRules.EarliestKnownDate)
+                            cn = "{5:yyyy}\\{5:MM}\\{5:dd} {5:HH}-{5:mm}-{5:ss}";
+                        baseName = string.Format(cn, file.Name, file.Extension.Trim('.'), file.CreationTime, file.LastWriteTime, file.LastAccessTime, new[] { file.CreationTime, file.LastAccessTime, file.LastWriteTime }.Min());
+
+                        string newName = Path.GetFullPath(Path.Combine(UseDestination ? dest.FullName : source.FullName, $"{baseName}{file.Extension}"));
+
+                        for (int i = 0; ;)
+                            try {
+                                if (!File.Exists(newName)) {
+                                    Directory.CreateDirectory(Path.GetDirectoryName(newName));
+                                    file.MoveTo(newName);
+                                }
+                                else {
+                                    newName = Path.Combine(Path.GetDirectoryName(newName),
+                                        Path.GetFileNameWithoutExtension(baseName) +
+                                        $" ({++i})" +
+                                        Path.GetExtension(baseName));
+                                    continue;
+                                }
+
+                                break;
+                            }
+                            catch (Exception e) {
+                                Console.WriteLine(e);
+                                break;
+                            }
+                    }
+                }
+                catch (Exception ex) {
+                    Console.WriteLine(ex);
+                }
+            }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        }
+
+
+        [XmlAttribute]
+        public bool IsMoving
+        {
+            get => _isMoving;
+            set
+            {
+                _isMoving = value;
+                if (_isMoving)
+                {
+                    var thread = new Thread(CheckFiles)
+                    {
+                        IsBackground = true,
+                    };
+                    thread.Start();
                 }
             }
-            Console.WriteLine("Finished!");
         }
     }
 }
