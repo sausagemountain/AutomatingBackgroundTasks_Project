@@ -96,8 +96,11 @@ namespace AutomatingBackgroundTasks.Interface
             {
                 case WindowState.Minimized:
                     if (Preferences.Default.RunHidden)
+                    {
                         Hide();
-
+                    }
+                    break;
+                case WindowState.Normal:
                     break;
                 default:
                     break;
@@ -169,6 +172,13 @@ namespace AutomatingBackgroundTasks.Interface
             }
 
             PatternList.ItemsSource = PatternCollection;
+        }
+
+        private void this_Activated(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+            Focus();
         }
     }
 }

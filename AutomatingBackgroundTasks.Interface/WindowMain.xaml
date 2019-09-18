@@ -8,7 +8,7 @@
         StateChanged="this_StateChanged"
         Closed="this_Closed"
         Loaded="this_Loaded"
-        ShowActivated="True"
+        Activated="this_Activated"
         WindowStartupLocation="Manual"
         Title="Mover"
         SizeToContent="Manual"
