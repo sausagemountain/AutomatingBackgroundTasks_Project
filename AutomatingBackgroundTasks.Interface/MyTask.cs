@@ -147,18 +147,24 @@ namespace AutomatingBackgroundTasks.Interface
                         if(!file.Exists)
                             continue;
 
-                        string baseName = file.Name;
                         string cn = CustomName;
                         if (Rule == NamingRules.EarliestKnownDate)
                             cn = "{5:yyyy}\\{5:MM}\\{5:dd} {5:HH}-{5:mm}-{5:ss}";
                         
                         string ext = file.Extension.Trim('.');
-                        baseName = string.Format(cn, file.Name, ext, file.CreationTime, file.LastWriteTime, file.LastAccessTime, new[] { file.CreationTime, file.LastAccessTime, file.LastWriteTime }.Min());
+                        var dates = new[] {file.CreationTime, file.LastAccessTime, file.LastWriteTime};
+                        string baseName = string.Format(
+                            cn,
+                            Path.GetFileNameWithoutExtension(file.FullName),
+                            ext,
+                            dates[0],
+                            dates[1],
+                            dates[2],
+                            dates.Min());
 
-                        string newDir = UseDestination ? dest.FullName : source.FullName;
-                        string newName = Path.GetFullPath(Path.Combine(newDir, $"{baseName}.{ext}"));
+                        string newName = Path.GetFullPath(Path.Combine((UseDestination ? dest.FullName : source.FullName), $"{baseName}.{ext}"));
                         
-                        newDir = Path.GetDirectoryName(newName);
+                        string newDir = Path.GetDirectoryName(newName);
                         baseName = Path.GetFileNameWithoutExtension(newName);
 
                         for (int i = 0; ;)
