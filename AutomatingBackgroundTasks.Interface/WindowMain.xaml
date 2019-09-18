@@ -21,7 +21,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
-            <MenuItem Name="Pref" Header="Preferences"/>
+            <MenuItem Header="File">
+                <MenuItem Name="FileNew" Header="New Rule"/>
+                <MenuItem Name="Pref" Header="Preferences"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Name="EditRule" Header="Edit Rule"/>
+                <MenuItem Name="RemoveRule" Header="Remove Rule"/>
+                <Separator></Separator>
+                <MenuItem Name="AddExtension" Header="Add Extension"/>
+                <MenuItem Name="EditExtension" Header="Edit Extension"/>
+                <MenuItem Name="RemoveExtension" Header="Remove Extension"/>
+            </MenuItem>
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

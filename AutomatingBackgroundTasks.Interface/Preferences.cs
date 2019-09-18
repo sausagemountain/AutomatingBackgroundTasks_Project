@@ -67,7 +67,7 @@ namespace AutomatingBackgroundTasks.Interface
         private List<MyTask> _settings = new List<MyTask>();
 
         public bool AlwaysShowTrayIcon { get; set; } = true;
-        public bool MinimizeToTray { get; set; } = true;
+        public bool RunHidden { get; set; } = true;
 
         public (double, double) LastMainWindowPosition { get; set; } = (10, 10);
         public (double, double) MainWindowSize { get; set; } = (300, 500);

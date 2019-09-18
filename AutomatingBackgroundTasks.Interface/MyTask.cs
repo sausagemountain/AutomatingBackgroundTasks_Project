@@ -151,21 +151,24 @@ namespace AutomatingBackgroundTasks.Interface
                         string cn = CustomName;
                         if (Rule == NamingRules.EarliestKnownDate)
                             cn = "{5:yyyy}\\{5:MM}\\{5:dd} {5:HH}-{5:mm}-{5:ss}";
-                        baseName = string.Format(cn, file.Name, file.Extension.Trim('.'), file.CreationTime, file.LastWriteTime, file.LastAccessTime, new[] { file.CreationTime, file.LastAccessTime, file.LastWriteTime }.Min());
+                        
+                        string ext = file.Extension.Trim('.');
+                        baseName = string.Format(cn, file.Name, ext, file.CreationTime, file.LastWriteTime, file.LastAccessTime, new[] { file.CreationTime, file.LastAccessTime, file.LastWriteTime }.Min());
 
-                        string newName = Path.GetFullPath(Path.Combine(UseDestination ? dest.FullName : source.FullName, $"{baseName}{file.Extension}"));
+                        string newDir = UseDestination ? dest.FullName : source.FullName;
+                        string newName = Path.GetFullPath(Path.Combine(newDir, $"{baseName}.{ext}"));
+                        
+                        newDir = Path.GetDirectoryName(newName);
+                        baseName = Path.GetFileNameWithoutExtension(newName);
 
                         for (int i = 0; ;)
                             try {
                                 if (!File.Exists(newName)) {
-                                    Directory.CreateDirectory(Path.GetDirectoryName(newName));
+                                    Directory.CreateDirectory(newDir);
                                     file.MoveTo(newName);
                                 }
                                 else {
-                                    newName = Path.Combine(Path.GetDirectoryName(newName),
-                                        Path.GetFileNameWithoutExtension(baseName) +
-                                        $" ({++i})" +
-                                        Path.GetExtension(baseName));
+                                    newName = Path.Combine(newDir, baseName + $" ({++i})." + ext);
                                     continue;
                                 }
 

@@ -26,6 +26,8 @@ namespace AutomatingBackgroundTasks.Interface
             (Top, Left) = Preferences.Default.LastMainWindowPosition;
             (Height, Width) = Preferences.Default.MainWindowSize;
 
+            #region Menu Population
+
             Pref.Command = new RelayCommand(o => {
                 var preferences = new WindowPreferences { Owner = this };
                 preferences.ShowDialog();
@@ -33,24 +35,25 @@ namespace AutomatingBackgroundTasks.Interface
                 appIcon.Visible = Preferences.Default.AlwaysShowTrayIcon;
             });
 
-            AddRuleItem.Command = new RelayCommand(true, o => {
+            AddRuleItem.Command = FileNew.Command = new RelayCommand(true, o => {
                 var editRule = new WindowEditRule(new MyTask()) { Owner = this };
                 editRule.ShowDialog();
                 Tasks.Add(WindowEditRule.Task);
             });
-            AddExtItem.Command = new RelayCommand(o =>  ItemsGrid.SelectedIndex != -1, o => {
+            AddExtItem.Command = AddExtension.Command = new RelayCommand(o =>  ItemsGrid.SelectedIndex != -1, o => {
                 var addExtensionDialog = new WindowAddPattern { Owner = this };
                 addExtensionDialog.ShowDialog();
                 if (!string.IsNullOrWhiteSpace(addExtensionDialog.NewExtension))
                     PatternCollection.Add(addExtensionDialog.NewExtension);
             });
-            EditRuleItem.Command = new RelayCommand(o => ItemsGrid.SelectedIndex != -1, o => {
+
+            EditRuleItem.Command = EditRule.Command = new RelayCommand(o => ItemsGrid.SelectedIndex != -1, o => {
                 var editRule = new WindowEditRule(Tasks[ItemsGrid.SelectedIndex]) {Owner = this};
                 editRule.ShowDialog();
                 if (!Tasks.Contains(WindowEditRule.Task))
                     Tasks.Add(WindowEditRule.Task);
             });
-            EditExtItem.Command = new RelayCommand(o => PatternList.SelectedIndex != -1 && ItemsGrid.SelectedIndex != -1, o => {
+            EditExtItem.Command = EditExtension.Command = new RelayCommand(o => PatternList.SelectedIndex != -1 && ItemsGrid.SelectedIndex != -1, o => {
                 var addExtensionDialog = new WindowAddPattern(PatternCollection[PatternList.SelectedIndex].Clone() as string) { Owner = this };
                 addExtensionDialog.ShowDialog();
                 if (!string.IsNullOrWhiteSpace(addExtensionDialog.NewExtension)) {
@@ -58,13 +61,16 @@ namespace AutomatingBackgroundTasks.Interface
                     PatternCollection.Add(addExtensionDialog.NewExtension);
                 }
             });
-            RemoveRuleItem.Command = new RelayCommand(o => ItemsGrid.SelectedIndex != -1, o => {
+            RemoveRuleItem.Command = RemoveRule.Command = new RelayCommand(o => ItemsGrid.SelectedIndex != -1, o => {
                 Tasks[ItemsGrid.SelectedIndex].IsMoving = false;
                 Tasks.RemoveAt(ItemsGrid.SelectedIndex);
             });
-            RemoveExtItem.Command = new RelayCommand(o => PatternList.SelectedIndex != -1 && ItemsGrid.SelectedIndex != -1, o => {
+            RemoveExtItem.Command = RemoveExtension.Command = new RelayCommand(o => PatternList.SelectedIndex != -1 && ItemsGrid.SelectedIndex != -1, o => {
                 PatternCollection.RemoveAt(PatternList.SelectedIndex);
             });
+
+            #endregion
+
         }
         private void this_Closed(object sender, EventArgs e)
         {
@@ -72,6 +78,7 @@ namespace AutomatingBackgroundTasks.Interface
             Preferences.Default.LastMainWindowPosition = (Top, Left);
             Preferences.Default.MainWindowSize = (ActualHeight, ActualWidth);
             Preferences.Default.Save();
+
             foreach (MyTask task in Tasks)
             {
                 task.IsMoving = false;
@@ -88,22 +95,18 @@ namespace AutomatingBackgroundTasks.Interface
             switch (WindowState)
             {
                 case WindowState.Minimized:
-                    if (Preferences.Default.MinimizeToTray)
-                    {
-                        appIcon.Visible = true;
+                    if (Preferences.Default.RunHidden)
                         Hide();
-                    }
 
                     break;
                 default:
-                    if (Preferences.Default.MinimizeToTray)
-                        if (!Preferences.Default.AlwaysShowTrayIcon)
-                            appIcon.Visible = false;
                     break;
             }
         }
         private void this_Loaded(object sender, RoutedEventArgs e)
         {
+            #region Tray Icon
+
             var popup = new[]
             {
                 new MenuItem {Text = "Open"},
@@ -146,6 +149,9 @@ namespace AutomatingBackgroundTasks.Interface
                         break;
                 }
             };
+
+            #endregion
+
         }
 
         public NotifyIcon appIcon;
